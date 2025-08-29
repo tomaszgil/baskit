@@ -1,0 +1,7 @@
+# Ignore artifacts:
+build
+coverage
+convex/_generated
+
+# Ignore all HTML files:
+**/*.html

@@ -1,0 +1,124 @@
+{"id": "j97bkw6sb23ap3h9v5axw682ph", "name": "Jabłko", "unit": "piece"}
+{"id": "k8cmlx7tc34bq4i0w6byx793qi8", "name": "Banan", "unit": "piece"}
+{"id": "l9dnmy8ud45cr5j1x7czy804rj9", "name": "Pomarańcza", "unit": "piece"}
+{"id": "m0eonz9ve56ds6k2y8daz905sk0", "name": "Winogrona", "unit": "g"}
+{"id": "n1fpoa0wf67et7l3z9eba016tl1", "name": "Truskawki", "unit": "g"}
+{"id": "o2gqpb1xg78fu8m4a0fcb127um2", "name": "Maliny", "unit": "g"}
+{"id": "p3hrqc2yh89gv9n5b1gdc238vn3", "name": "Jagody", "unit": "g"}
+{"id": "q4isrd3zi90hw0o6c2hed349wo4", "name": "Śliwka", "unit": "piece"}
+{"id": "r5jtse4aj91ix1p7d3ife450xp5", "name": "Gruszka", "unit": "piece"}
+{"id": "s6kutf5bk92jy2q8e4jgf561yq6", "name": "Brzoskwinia", "unit": "piece"}
+{"id": "t7lvug6cl93kz3r9f5kgh672zr7", "name": "Morela", "unit": "piece"}
+{"id": "u8mwvh7dm94la4s0g6lhi783as8", "name": "Nektarynka", "unit": "piece"}
+{"id": "v9nxwi8en95mb5t1h7mij894bt9", "name": "Ananas", "unit": "piece"}
+{"id": "w0oyxj9fo96nc6u2i8njk905cu0", "name": "Mango", "unit": "piece"}
+{"id": "x1pzyk0gp97od7v3j9okl016dv1", "name": "Kiwi", "unit": "piece"}
+{"id": "y2qazl1hq98pe8w4k0plm127ew2", "name": "Awokado", "unit": "piece"}
+{"id": "z3rbam2ir99qf9x5l1qmn238fx3", "name": "Marchew", "unit": "g"}
+{"id": "a4scbn3js90rg0y6m2rno349gy4", "name": "Pietruszka", "unit": "g"}
+{"id": "b5tdco4kt91sh1z7n3sop450hz5", "name": "Seler", "unit": "g"}
+{"id": "c6uedp5lu92ti2a8o4tpq561ia6", "name": "Cebula", "unit": "piece"}
+{"id": "d7vfeq6mv93uj3b9p5uqr672jb7", "name": "Czosnek", "unit": "piece"}
+{"id": "e8wgfr7nw94vk4c0q6vrs783kc8", "name": "Ziemniaki", "unit": "g"}
+{"id": "f9xhgs8ox95wl5d1r7wst894ld9", "name": "Bataty", "unit": "g"}
+{"id": "g0yiht9py96xm6e2s8xtu905me0", "name": "Dynia", "unit": "g"}
+{"id": "h1zjiu0qz97yn7f3t9yuv016nf1", "name": "Bakłażan", "unit": "piece"}
+{"id": "i2akjv1ra98zo8g4u0zvw127og2", "name": "Pomidor", "unit": "piece"}
+{"id": "j3blkw2sb99ap9h5v1awx238ph3", "name": "Ogórek", "unit": "piece"}
+{"id": "k4cmlx3tc00bq0i6w2bxy349qi4", "name": "Papryka", "unit": "piece"}
+{"id": "l5dnmy4ud11cr1j7x3cyz450rj5", "name": "Brokuły", "unit": "g"}
+{"id": "m6eonz5ve22ds2k8y4daz561sk6", "name": "Kalafior", "unit": "piece"}
+{"id": "n7fpoa6wf33et3l9z5eba672tl7", "name": "Kapusta czerwona", "unit": "piece"}
+{"id": "o8gqpb7xg44fu4m0a6fcb783un8", "name": "Kapusta biała", "unit": "piece"}
+{"id": "p9hrqc8yh55gv5n1b7gdc894vn9", "name": "Sałata rzymska", "unit": "piece"}
+{"id": "q0isrd9zi66hw6o2c8hed005wo0", "name": "Mix sałat", "unit": "g"}
+{"id": "r1jtse0aj77ix7p3d9ife116xp1", "name": "Szpinak świeży", "unit": "g"}
+{"id": "s2kutf1bk88jy8q4e0jgf227yq2", "name": "Szpinak mrożony", "unit": "g"}
+{"id": "t3lvug2cl99kz9r5f1kgh338zr3", "name": "Rukola", "unit": "g"}
+{"id": "u4mwvh3dm00la0s6g2lhi449as4", "name": "Rzodkiewka", "unit": "g"}
+{"id": "v5nxwi4en11mb1t7h3mij550bt5", "name": "Buraki", "unit": "g"}
+{"id": "w6oyxj5fo22nc2u8i4njk661cu6", "name": "Chleb biały", "unit": "piece"}
+{"id": "x7pzyk6gp33od3v9j5okl772dv7", "name": "Bułki białe", "unit": "piece"}
+{"id": "y8qazl7hq44pe4w0k6plm883ew8", "name": "Bułki graham", "unit": "piece"}
+{"id": "z9rbam8ir55qf5x1l7qmn994fx9", "name": "Bagietka", "unit": "piece"}
+{"id": "a0scbn9js66rg6y2m8rno005gy0", "name": "Tosty", "unit": "piece"}
+{"id": "b1tdco0kt77sh7z3n9sop116hz1", "name": "Makaron", "unit": "g"}
+{"id": "c2uedp1lu88ti8a4o0tpq227ia2", "name": "Ryż", "unit": "g"}
+{"id": "d3vfeq2mv99uj9b5p1uqr338jb3", "name": "Kasza gryczana", "unit": "g"}
+{"id": "e4wgfr3nw00vk0c6q2vrs449kc4", "name": "Kasza jaglana", "unit": "g"}
+{"id": "f5xhgs4ox11wl1d7r3wst550ld5", "name": "Płatki owsiane", "unit": "g"}
+{"id": "g6yiht5py22xm2e8s4xtu661me2", "name": "Płatki jaglane", "unit": "g"}
+{"id": "h7zjiu6qz33yn3f9t5yuv772nf3", "name": "Mąka pszenna", "unit": "g"}
+{"id": "i8akjv7ra44zo4g0u6zvw883og4", "name": "Mąka żytnia", "unit": "g"}
+{"id": "j9blkw8sb55ap5h1v7awx994ph5", "name": "Drożdże", "unit": "g"}
+{"id": "k0cmlx9tc66bq6i2w8bxy005qi6", "name": "Cukier", "unit": "g"}
+{"id": "l1dnmy0ud77cr7j3x9cyz116rj7", "name": "Miód", "unit": "ml"}
+{"id": "m2eonz1ve88ds8k4y0daz227sk8", "name": "Dżem", "unit": "g"}
+{"id": "n3fpoa2wf99et9l5z1eba338tl9", "name": "Masło", "unit": "g"}
+{"id": "o4gqpb3xg00fu0m6a2fcb449un0", "name": "Margaryna", "unit": "g"}
+{"id": "p5hrqc4yh11gv1n7b4gdc550vn5", "name": "Olej rzepakowy", "unit": "ml"}
+{"id": "q6isrd5zi22hw2o8c6hed661wo6", "name": "Oliwa z oliwek", "unit": "ml"}
+{"id": "r7jtse6aj33ix3p9d8ife772xp7", "name": "Olej kokosowy", "unit": "ml"}
+{"id": "s8kutf7bk44jy4q0e0jgf883yq8", "name": "Ocet jabłkowy", "unit": "ml"}
+{"id": "t9lvug8cl55kz5r1f1kgh994zr9", "name": "Ocet balsamiczny", "unit": "ml"}
+{"id": "u0mwvh9dm66la6s2g2lhi005as0", "name": "Sos sojowy", "unit": "ml"}
+{"id": "v1nxwi0en77mb7t3h3mij116bt1", "name": "Ketchup", "unit": "ml"}
+{"id": "w2oyxj1fo88nc8u4i4njk227cu2", "name": "Musztarda", "unit": "g"}
+{"id": "x3pzyk2fo99nd9v5j5okl338dv3", "name": "Majonez", "unit": "g"}
+{"id": "y4qazl3fo00oe0w6k6plm449ew4", "name": "Śmietana", "unit": "ml"}
+{"id": "z5rbam4fo11pf1x7l7qmn550fx5", "name": "Jogurt naturalny", "unit": "ml"}
+{"id": "a6scbn5fo22qg2y8m8rno661gy6", "name": "Jogurt grecki", "unit": "ml"}
+{"id": "b7tdco6fo33rh3z9n9sop772hz7", "name": "Mleko", "unit": "ml"}
+{"id": "c8uedp7fo44si4a0o0tpq883ia8", "name": "Mleko migdałowe", "unit": "ml"}
+{"id": "d9vfeq8fo55tj5b1p1uqr994jb9", "name": "Mleko kokosowe", "unit": "ml"}
+{"id": "e0wgfr9fo66uk6c2q2vrs005kc0", "name": "Ser żółty", "unit": "g"}
+{"id": "f1xhgs0fo77vl7d3r3wst116ld1", "name": "Ser biały", "unit": "g"}
+{"id": "g2yiht1fo88wm8e4s4xtu227me2", "name": "Ser feta", "unit": "g"}
+{"id": "h3zjiu2fo99xn9f5t5yuv338nf3", "name": "Ser mozzarella", "unit": "g"}
+{"id": "i4akjv3fo00yo0g6u6zvw449og4", "name": "Ser parmezan", "unit": "g"}
+{"id": "j5blkw4fo11zp1h7v7awx550ph5", "name": "Ser ricotta", "unit": "g"}
+{"id": "k6cmlx5fo22aq2i8w8bxy661qi6", "name": "Jaja", "unit": "piece"}
+{"id": "l7dnmy6fo33br3j9x9cyz772rj7", "name": "Kurczak", "unit": "g"}
+{"id": "m8eonz7fo44cs4k0y0daz883sk8", "name": "Indyk", "unit": "g"}
+{"id": "n9fpoa8fo55dt5l1z1eba994tl9", "name": "Wieprzowina", "unit": "g"}
+{"id": "o0gqpb9fo66eu6m2a2fcb005un0", "name": "Wołowina", "unit": "g"}
+{"id": "p1hrqc0fo77fv7n3b4gdc116vn5", "name": "Łosoś", "unit": "g"}
+{"id": "q2isrd1fo88gw8o4c6hed227wo6", "name": "Tuńczyk", "unit": "g"}
+{"id": "r3jtse2fo99hx9p5d8ife338xp7", "name": "Dorsz", "unit": "g"}
+{"id": "s4kutf3fo00iy0q6e0jgf449yq8", "name": "Makrela", "unit": "g"}
+{"id": "t5lvug4fo11jz1r7f1kgh550zr9", "name": "Śledź", "unit": "g"}
+{"id": "u6mwvh5fo22ka2s8g2lhi661as0", "name": "Krewetki", "unit": "g"}
+{"id": "v7nxwi6fo33lb3t9h3mij772bt1", "name": "Orzechy włoskie", "unit": "g"}
+{"id": "w8oyxj7fo44mc4u0i4njk883cu2", "name": "Migdały", "unit": "g"}
+{"id": "x9pzyk8fo55nd5v1j5okl994dv3", "name": "Orzechy laskowe", "unit": "g"}
+{"id": "y0qazl9fo66oe6w2k6plm005ew4", "name": "Orzechy nerkowca", "unit": "g"}
+{"id": "z1rbam0fo77pf7x3l7qmn116fx5", "name": "Pistacje", "unit": "g"}
+{"id": "a2scbn1fo88qg8y4m8rno227gy6", "name": "Nasiona słonecznika", "unit": "g"}
+{"id": "b3tdco2fo99rh9z5n9sop338hz7", "name": "Nasiona dyni", "unit": "g"}
+{"id": "c4uedp3fo00si0a6o0tpq449ia8", "name": "Nasiona chia", "unit": "g"}
+{"id": "d5vfeq4fo11tj1b7p1uqr550jb9", "name": "Rodzynki", "unit": "g"}
+{"id": "e6wgfr5fo22uk2c8q2vrs661kc0", "name": "Daktyle", "unit": "g"}
+{"id": "f7xhgs6fo33vl3d9r3wst772ld1", "name": "Figi", "unit": "piece"}
+{"id": "g8yiht7fo44wm4e0s4xtu883me2", "name": "Śliwki suszone", "unit": "g"}
+{"id": "h9zjiu8fo55xn5f1t5yuv994nf3", "name": "Morele suszone", "unit": "g"}
+{"id": "i0akjv9fo66yo6g2u6zvw005og4", "name": "Czekolada gorzka", "unit": "piece"}
+{"id": "j1blkw0fo77zp7h3v7awx116ph5", "name": "Czekolada mleczna", "unit": "piece"}
+{"id": "k2cmlx1fo88aq8i4w8bxy227qi6", "name": "Czekolada biała", "unit": "piece"}
+{"id": "l3dnmy2fo99br9j5x9cyz338rj7", "name": "Kakao", "unit": "g"}
+{"id": "m4eonz3fo00cs0k6y0daz449sk8", "name": "Kawa", "unit": "g"}
+{"id": "n5fpoa4fo11dt1l7z1eba550tl9", "name": "Herbata czarna", "unit": "piece"}
+{"id": "o6gqpb5fo22eu2m8a2fcb661un0", "name": "Herbata zielona", "unit": "piece"}
+{"id": "p7hrqc6fo33fv3n9b4gdc772vn5", "name": "Herbata rumiankowa", "unit": "piece"}
+{"id": "q8isrd7fo44gw4o0c6hed883wo6", "name": "Herbata miętowa", "unit": "piece"}
+{"id": "r9jtse8fo55hx5p1d8ife994xp7", "name": "Sok pomarańczowy", "unit": "ml"}
+{"id": "s0kutf9fo66iy6q2e0jgf005yq8", "name": "Sok jabłkowy", "unit": "ml"}
+{"id": "t1lvug0fo77jz7r3f1kgh116zr9", "name": "Sok grejpfrutowy", "unit": "ml"}
+{"id": "u2mwvh1fo88ka8s4g2lhi227as0", "name": "Sok pomidorowy", "unit": "ml"}
+{"id": "v3nxwi2fo99lb9t5h3mij338bt1", "name": "Sok marchwiowy", "unit": "ml"}
+{"id": "w4oyxj3fo00mc0u6i4njk449cu2", "name": "Woda źródlana", "unit": "ml"}
+{"id": "x5pzyk4fo11nd1v7j5okl550dv3", "name": "Woda mineralna", "unit": "ml"}
+{"id": "y6qazl5fo22oe2w8k6plm661ew4", "name": "Woda gazowana", "unit": "ml"}
+{"id": "z7rbam6fo33pf3x0l7qmn772fx5", "name": "Lemoniada", "unit": "ml"}
+{"id": "a8scbn7fo44qg4y2m8rno883gy6", "name": "Piwo", "unit": "ml"}
+{"id": "b9tdco8fo55rh5z4n9sop994hz7", "name": "Wino czerwone", "unit": "ml"}
+{"id": "c0uedp9fo66si6a6o0tpq005ia8", "name": "Wino białe", "unit": "ml"}
