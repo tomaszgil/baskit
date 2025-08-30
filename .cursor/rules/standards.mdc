@@ -1,0 +1,196 @@
+---
+description: General coding standards
+globs:
+alwaysApply: true
+---
+
+# Cursor Rules for Baskit Project
+
+## Project Overview
+
+This is a React + TypeScript + Vite project with:
+
+- **Frontend**: React 19, TypeScript, Tailwind CSS
+- **Routing**: TanStack Router
+- **Backend**: Convex (queries and mutations)
+- **UI Components**: shadcn/ui components
+- **Styling**: Tailwind CSS with custom styles
+- **Interface Language**: Polish
+
+## Code Style & Standards
+
+### TypeScript
+
+- Use strict TypeScript with proper type annotations
+- Prefer interfaces over types for object shapes
+- Use generic types where appropriate
+- Infer return types for functions
+- Use proper error handling with Result types or try-catch
+
+### React
+
+- Use React 19 features and hooks
+- Prefer functional components over class components
+- Use proper dependency arrays in useEffect, useMemo, useCallback
+
+### Polish Interface Requirements
+
+- All user-facing text must be in Polish
+- Use consistent Polish terminology throughout the application
+- Maintain proper Polish grammar and punctuation
+- Consider pluralization rules for Polish language
+
+## File Structure & Organization
+
+### Routes (TanStack Router)
+
+- Place route components in `src/routes/`
+- Use `createFileRoute` for route definitions
+- Follow the file-based routing convention
+- Keep route components focused and lightweight
+
+### Components
+
+- Use shadcn/ui components as the foundation
+- Create custom components that extend shadcn/ui when needed
+
+### Styling
+
+- Use Tailwind CSS classes primarily
+- Create custom Tailwind utilities in `src/index.css` when needed
+- Use CSS variables for theme customization
+- Maintain consistent spacing and design tokens
+
+### Convex Backend
+
+- Place Convex functions in `convex/` directory
+- Separate queries and mutations into logical modules
+- Use proper Convex patterns for data fetching and mutations
+- Follow Convex best practices for performance
+
+## Component Development
+
+### shadcn/ui Usage
+
+- Use existing shadcn/ui components as building blocks
+- Extend components with custom props when needed
+- Maintain consistent styling patterns
+- Use the shadcn CLI for adding new components
+
+### Custom Components
+
+- Create components that follow shadcn/ui patterns
+- Use `cn()` utility for conditional classes
+- Implement proper accessibility features
+- Use TypeScript for prop definitions
+
+## API & Data Management
+
+### Convex Queries
+
+- Use `useQuery` hook for data fetching
+- Implement proper loading and error states
+- Use optimistic updates when appropriate
+
+### Convex Mutations
+
+- Use `useMutation` hook for data modifications
+- Implement proper error handling
+- Use optimistic updates for better UX
+- Validate data before mutations
+
+## Performance & Best Practices
+
+### Code Splitting
+
+- Use TanStack Router's built-in code splitting
+- Lazy load components when appropriate
+- Optimize bundle size with proper imports
+
+### State Management
+
+- Use React hooks for local state
+- Use Convex for server state
+- Avoid prop drilling with proper component composition
+- Use context when appropriate for global state
+
+### Error Handling
+
+- Implement proper error boundaries
+- Use try-catch blocks in async operations
+- Provide meaningful error messages in Polish
+- Log errors appropriately
+
+## Testing & Quality
+
+### Code Quality
+
+- Use ESLint rules consistently
+- Follow TypeScript strict mode
+- Write self-documenting code
+- Use meaningful variable and function names
+
+### Accessibility
+
+- Implement proper ARIA labels
+- Ensure keyboard navigation works
+- Use semantic HTML elements
+- Test with screen readers
+
+## Development Workflow
+
+### File Naming
+
+- Use kebab-case for file names
+- Use PascalCase for component names
+- Use camelCase for variables and functions
+
+### Imports
+
+- Use absolute imports with `@/` prefix for src files
+- Use `~` prefix for root-level files
+- Group imports logically (React, third-party, local)
+- Remove unused imports
+
+### Comments
+
+- Write comments in Polish for Polish-specific logic
+- Use JSDoc for complex functions
+- Explain business logic when not obvious
+- Keep comments up-to-date with code changes
+
+## Common Tasks
+
+### Adding New Routes
+
+1. Create file in `src/routes/`
+2. Use `createFileRoute` pattern
+3. Update navigation if needed
+
+### Adding New Convex Functions
+
+1. Create function in appropriate module
+2. Export from module
+3. Use in React components
+
+### Adding New shadcn/ui Components
+
+1. Use `npx shadcn@latest add [component]`
+2. Customize as needed
+3. Maintain consistent styling
+4. Test accessibility
+
+### Styling with Tailwind
+
+1. Use utility classes first
+2. Create custom utilities when needed
+3. Use CSS variables for theming
+4. Maintain design consistency
+
+## Notes
+
+- Always consider Polish language requirements
+- Use shadcn/ui components as the foundation
+- Follow Convex best practices for performance
+- Maintain consistent code style across the project
+- Test components with proper error states
