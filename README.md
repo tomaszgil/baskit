@@ -1,69 +1,62 @@
-# React + TypeScript + Vite
+# Baskit - Shopping List Management Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Baskit is a mobile-optimized web application that helps users quickly and easily create and manage grocery shopping lists.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Products**: Built-in database of grocery products with units (ml, g, pcs)
+- **Templates**: Create and manage meal and list templates
+- **Shopping Lists**: Create lists in draft mode with editing capabilities
+- **Shopping Mode**: Mark products as you shop
+- **Auto-saving**: All changes are saved automatically
+- **Polish Interface**: Full support for the Polish language
 
-## Expanding the ESLint configuration
+## Technologies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Routing**: TanStack Router
+- **Backend**: Convex (local database and functions)
+- **UI Components**: shadcn/ui
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+1. **Clone the repository**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```bash
+   git clone <repository-url>
+   cd baskit
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Install dependencies**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   ```bash
+   pnpm install
+   ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Set up local Convex**
+
+   ```bash
+   # Install Convex CLI
+   pnpm add -g convex
+
+   # Start local Convex
+   convex dev
+   ```
+
+4. **Configure environment variables**
+
+   ```bash
+   # Copy env.example to .env
+   cp env.example .env
+
+   # Set CONVEX_URL from the output of convex dev (usually http://localhost:8000)
+   ```
+
+5. **Run the application**
+
+   ```bash
+   pnpm dev
+   ```
+
+## Running in Development Mode
