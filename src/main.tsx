@@ -4,6 +4,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { ConvexProvider, ConvexReactClient } from 'convex/react'
 import './index.css'
 
+import '@fontsource-variable/geist'
+
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
 
 // Import the generated route tree
