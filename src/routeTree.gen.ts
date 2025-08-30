@@ -9,24 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as ProductsRouteImport } from './routes/products'
-import { Route as ListsRouteImport } from './routes/lists'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TemplatesIndexRouteImport } from './routes/templates/index'
+import { Route as ListsIndexRouteImport } from './routes/lists/index'
+import { Route as TemplatesCreateRouteImport } from './routes/templates/create'
+import { Route as ListsCreateRouteImport } from './routes/lists/create'
 
-const TemplatesRoute = TemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ListsRoute = ListsRouteImport.update({
-  id: '/lists',
-  path: '/lists',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,62 +26,95 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemplatesIndexRoute = TemplatesIndexRouteImport.update({
+  id: '/templates/',
+  path: '/templates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListsIndexRoute = ListsIndexRouteImport.update({
+  id: '/lists/',
+  path: '/lists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TemplatesCreateRoute = TemplatesCreateRouteImport.update({
+  id: '/templates/create',
+  path: '/templates/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListsCreateRoute = ListsCreateRouteImport.update({
+  id: '/lists/create',
+  path: '/lists/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/lists': typeof ListsRoute
   '/products': typeof ProductsRoute
-  '/templates': typeof TemplatesRoute
+  '/lists/create': typeof ListsCreateRoute
+  '/templates/create': typeof TemplatesCreateRoute
+  '/lists': typeof ListsIndexRoute
+  '/templates': typeof TemplatesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/lists': typeof ListsRoute
   '/products': typeof ProductsRoute
-  '/templates': typeof TemplatesRoute
+  '/lists/create': typeof ListsCreateRoute
+  '/templates/create': typeof TemplatesCreateRoute
+  '/lists': typeof ListsIndexRoute
+  '/templates': typeof TemplatesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/lists': typeof ListsRoute
   '/products': typeof ProductsRoute
-  '/templates': typeof TemplatesRoute
+  '/lists/create': typeof ListsCreateRoute
+  '/templates/create': typeof TemplatesCreateRoute
+  '/lists/': typeof ListsIndexRoute
+  '/templates/': typeof TemplatesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lists' | '/products' | '/templates'
+  fullPaths:
+    | '/'
+    | '/products'
+    | '/lists/create'
+    | '/templates/create'
+    | '/lists'
+    | '/templates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lists' | '/products' | '/templates'
-  id: '__root__' | '/' | '/lists' | '/products' | '/templates'
+  to:
+    | '/'
+    | '/products'
+    | '/lists/create'
+    | '/templates/create'
+    | '/lists'
+    | '/templates'
+  id:
+    | '__root__'
+    | '/'
+    | '/products'
+    | '/lists/create'
+    | '/templates/create'
+    | '/lists/'
+    | '/templates/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ListsRoute: typeof ListsRoute
   ProductsRoute: typeof ProductsRoute
-  TemplatesRoute: typeof TemplatesRoute
+  ListsCreateRoute: typeof ListsCreateRoute
+  TemplatesCreateRoute: typeof TemplatesCreateRoute
+  ListsIndexRoute: typeof ListsIndexRoute
+  TemplatesIndexRoute: typeof TemplatesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/templates': {
-      id: '/templates'
-      path: '/templates'
-      fullPath: '/templates'
-      preLoaderRoute: typeof TemplatesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/products': {
       id: '/products'
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lists': {
-      id: '/lists'
-      path: '/lists'
-      fullPath: '/lists'
-      preLoaderRoute: typeof ListsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,14 +124,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/templates/': {
+      id: '/templates/'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lists/': {
+      id: '/lists/'
+      path: '/lists'
+      fullPath: '/lists'
+      preLoaderRoute: typeof ListsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/templates/create': {
+      id: '/templates/create'
+      path: '/templates/create'
+      fullPath: '/templates/create'
+      preLoaderRoute: typeof TemplatesCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lists/create': {
+      id: '/lists/create'
+      path: '/lists/create'
+      fullPath: '/lists/create'
+      preLoaderRoute: typeof ListsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ListsRoute: ListsRoute,
   ProductsRoute: ProductsRoute,
-  TemplatesRoute: TemplatesRoute,
+  ListsCreateRoute: ListsCreateRoute,
+  TemplatesCreateRoute: TemplatesCreateRoute,
+  ListsIndexRoute: ListsIndexRoute,
+  TemplatesIndexRoute: TemplatesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

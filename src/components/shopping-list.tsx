@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
+import { useNavigate } from '@tanstack/react-router'
 import { api } from '../../convex/_generated/api'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -13,22 +14,8 @@ import {
   SelectValue,
 } from './ui/select'
 import { Checkbox } from './ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog'
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  CheckCircle,
-  ShoppingCart,
-  X,
-} from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { Plus, Edit, Trash2, Save, CheckCircle, X } from 'lucide-react'
 
 import type { Id } from '../../convex/_generated/dataModel'
 
@@ -54,7 +41,7 @@ interface ListItem {
 }
 
 export function ShoppingList() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const navigate = useNavigate()
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingList, setEditingList] = useState<ShoppingList | null>(null)
   const [formData, setFormData] = useState({
@@ -65,10 +52,8 @@ export function ShoppingList() {
   })
 
   const lists = useQuery(api.products.getAllShoppingLists) || []
-  const templates = useQuery(api.products.getAllTemplates) || []
   const products = useQuery(api.products.getAllProducts) || []
 
-  const createShoppingList = useMutation(api.products.createShoppingList)
   const updateShoppingList = useMutation(api.products.updateShoppingList)
   const deleteShoppingList = useMutation(api.products.deleteShoppingList)
   const toggleItemChecked = useMutation(api.products.toggleItemChecked)
@@ -83,43 +68,52 @@ export function ShoppingList() {
     setEditingList(null)
   }
 
-  const handleCreateFromTemplate = () => {
-    if (formData.selectedTemplate && formData.name) {
-      const template = templates.find(
-        (t) => t._id === formData.selectedTemplate,
-      )
-      if (template) {
-        const items = template.products.map((product) => ({
-          productId: product.productId,
-          quantity: product.quantity * formData.multiplier,
+  const addProductToList = () => {
+    setFormData((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          productId: '' as Id<'products'>,
+          quantity: 1,
           notes: '',
           checked: false,
-        }))
+        },
+      ],
+    }))
+  }
 
-        setFormData((prev) => ({ ...prev, items }))
-      }
-    }
+  const removeProductFromList = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      items: prev.items.filter((_, i) => i !== index),
+    }))
+  }
+
+  const updateProductInList = (
+    index: number,
+    field: keyof ListItem,
+    value: string | number | boolean,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      items: prev.items.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item,
+      ),
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
-      if (editingList) {
-        await updateShoppingList({
-          id: editingList._id,
-          name: formData.name,
-          items: formData.items,
-        })
-      } else {
-        await createShoppingList({
-          name: formData.name,
-          items: formData.items,
-        })
-      }
+      await updateShoppingList({
+        id: editingList!._id,
+        name: formData.name,
+        items: formData.items,
+      })
 
       resetForm()
-      setIsCreateDialogOpen(false)
       setIsEditDialogOpen(false)
     } catch (error) {
       console.error('Błąd podczas zapisywania listy:', error)
@@ -172,41 +166,6 @@ export function ShoppingList() {
     }
   }
 
-  const addProductToList = () => {
-    setFormData((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        {
-          productId: '' as Id<'products'>,
-          quantity: 1,
-          notes: '',
-          checked: false,
-        },
-      ],
-    }))
-  }
-
-  const removeProductFromList = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.filter((_, i) => i !== index),
-    }))
-  }
-
-  const updateProductInList = (
-    index: number,
-    field: keyof ListItem,
-    value: string | number | boolean,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item,
-      ),
-    }))
-  }
-
   const getUnitLabel = (unit: string) => {
     switch (unit) {
       case 'ml':
@@ -250,176 +209,10 @@ export function ShoppingList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Listy zakupów</h2>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
-              <Plus className="h-4 w-4 mr-2" />
-              Nowa lista
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Nowa lista zakupów</DialogTitle>
-            </DialogHeader>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nazwa listy</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  placeholder="np. Zakupy na weekend"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="template">Szablon (opcjonalnie)</Label>
-                  <Select
-                    value={formData.selectedTemplate}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        selectedTemplate: value as Id<'templates'> | '',
-                      }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Wybierz szablon" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {templates.map((template) => (
-                        <SelectItem key={template._id} value={template._id}>
-                          {template.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="multiplier">Mnożnik</Label>
-                  <Input
-                    id="multiplier"
-                    type="number"
-                    min="1"
-                    step="1"
-                    value={formData.multiplier}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        multiplier: parseInt(e.target.value) || 1,
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              {formData.selectedTemplate && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCreateFromTemplate}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Utwórz z szablonu
-                </Button>
-              )}
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label>Produkty</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addProductToList}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Dodaj produkt
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  {formData.items.map((item, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-4 gap-2 items-center"
-                    >
-                      <Select
-                        value={item.productId}
-                        onValueChange={(value) =>
-                          updateProductInList(index, 'productId', value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Produkt" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {products.map((p) => (
-                            <SelectItem key={p._id} value={p._id}>
-                              {p.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Input
-                        type="number"
-                        min="0.1"
-                        step="0.1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateProductInList(
-                            index,
-                            'quantity',
-                            parseFloat(e.target.value) || 0,
-                          )
-                        }
-                        placeholder="Ilość"
-                      />
-
-                      <Input
-                        value={item.notes}
-                        onChange={(e) =>
-                          updateProductInList(index, 'notes', e.target.value)
-                        }
-                        placeholder="Notatki"
-                      />
-
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeProductFromList(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsCreateDialogOpen(false)}
-                >
-                  Anuluj
-                </Button>
-                <Button type="submit">
-                  <Save className="h-4 w-4 mr-2" />
-                  Utwórz listę
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => navigate({ to: '/lists/create' })}>
+          <Plus className="h-4 w-4 mr-2" />
+          Nowa lista
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

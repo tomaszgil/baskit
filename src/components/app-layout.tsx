@@ -12,7 +12,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const getPageTitle = () => {
     const pathname = location.pathname
-    if (pathname === '/') return 'Strona główna'
+    if (pathname === '/') return 'Baskit'
     if (pathname === '/lists') return 'Listy zakupów'
     if (pathname === '/templates') return 'Szablony'
     if (pathname === '/products') return 'Produkty'

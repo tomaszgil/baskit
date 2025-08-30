@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ShoppingList } from '@/components/shopping-list'
 
-export const Route = createFileRoute('/lists')({
+export const Route = createFileRoute('/lists/')({
   component: Lists,
 })
 
