@@ -1,0 +1,12 @@
+# Tasks
+
+- Migrate all forms to use react-hook-form library
+- Revist import rules, apply `~` and `@` aliases across the codebase
+- Change the create buttons to a FAB
+- Create and add logo
+- Implement shopping mode for lists
+- Move edit list form to a standalone page
+- Add delete confirmation dialog
+- Add template editing functionality
+- Research the way to integrate Auth with Convex
+- Integrate with Auth

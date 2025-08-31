@@ -114,6 +114,14 @@ This is a React + TypeScript + Vite project with:
 - Avoid prop drilling with proper component composition
 - Use context when appropriate for global state
 
+### Form Management
+
+- Use `Form` component from shadcn/ui which is a wrapper around `react-hook-form`
+- Use `react-hook-form` for form handling
+- Use zod for form validation schemas
+- Implement proper form validation with Polish error messages
+- Refer to this documentation page for examples: https://ui.shadcn.com/docs/components/form
+
 ### Error Handling
 
 - Implement proper error boundaries

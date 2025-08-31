@@ -18,6 +18,7 @@ Baskit is a mobile-optimized web application that helps users quickly and easily
 - **Routing**: TanStack Router
 - **Backend**: Convex (local database and functions)
 - **UI Components**: shadcn/ui
+- **Form Management**: react-hook-form + zod validation
 
 ## Installation
 

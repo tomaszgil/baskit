@@ -42,7 +42,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       </main>
 
       {/* Footer Navigation */}
-      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <footer className="sticky bottom-0 z-50 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 max-w-md">
           <nav className="flex items-center justify-around py-3">
             {navigationItems.map((item) => {
