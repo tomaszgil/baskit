@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { useNavigate } from '@tanstack/react-router'
-import { api } from '../../convex/_generated/api'
+
+import { api } from '~/convex/_generated/api'
+import type { Id } from '~/convex/_generated/dataModel'
+
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
@@ -16,8 +19,6 @@ import {
 import { Checkbox } from './ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import { Plus, Edit, Trash2, Save, CheckCircle, X } from 'lucide-react'
-
-import type { Id } from '../../convex/_generated/dataModel'
 
 interface ShoppingList {
   _id: Id<'shoppingLists'>

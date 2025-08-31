@@ -1,7 +1,6 @@
 # Tasks
 
 - Migrate all forms to use react-hook-form library
-- Revist import rules, apply `~` and `@` aliases across the codebase
 - Change the create buttons to a FAB
 - Create and add logo
 - Implement shopping mode for lists

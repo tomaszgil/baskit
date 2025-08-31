@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useQuery } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+
+import { api } from '~/convex/_generated/api'
+import type { Id } from '~/convex/_generated/dataModel'
+
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
 import { Search, Plus } from 'lucide-react'
-
-import type { Id } from '../../convex/_generated/dataModel'
 
 interface Product {
   _id: Id<'products'>

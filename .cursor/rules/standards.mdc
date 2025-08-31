@@ -156,7 +156,7 @@ This is a React + TypeScript + Vite project with:
 ### Imports
 
 - Use absolute imports with `@/` prefix for src files
-- Use `~` prefix for root-level files
+- Use `~` prefix for root-level files (e.g. `~/convex` folder)
 - Group imports logically (React, third-party, local)
 - Remove unused imports
 

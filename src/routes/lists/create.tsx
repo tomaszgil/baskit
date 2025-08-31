@@ -1,7 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
-import { api } from '../../../convex/_generated/api'
+
+import { api } from '~/convex/_generated/api'
+import type { Id } from '~/convex/_generated/dataModel'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,7 +17,6 @@ import {
 } from '@/components/ui/select'
 import { ArrowLeft, Plus, Save, ShoppingCart, X } from 'lucide-react'
 import { toast } from 'sonner'
-import type { Id } from '../../../convex/_generated/dataModel'
 
 interface ListItem {
   productId: Id<'products'> | ''

@@ -1,10 +1,12 @@
 import { useQuery, useMutation } from 'convex/react'
 import { useNavigate } from '@tanstack/react-router'
-import { api } from '../../convex/_generated/api'
+
+import { api } from '~/convex/_generated/api'
+import type { Id } from '~/convex/_generated/dataModel'
+
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Plus, Trash2 } from 'lucide-react'
-import type { Id } from '../../convex/_generated/dataModel'
 
 export function TemplateManager() {
   const navigate = useNavigate()
