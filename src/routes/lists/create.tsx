@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { useQuery, useMutation } from 'convex/react'
 
 import { api } from '~/convex/_generated/api'
@@ -7,7 +7,14 @@ import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
@@ -24,55 +31,70 @@ interface ListItem {
   notes: string
 }
 
+interface CreateListFormData {
+  name: string
+  selectedTemplate: Id<'templates'> | ''
+  multiplier: number
+  items: ListItem[]
+}
+
 export const Route = createFileRoute('/lists/create')({
   component: CreateList,
 })
 
 function CreateList() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    name: '',
-    selectedTemplate: '' as Id<'templates'> | '',
-    multiplier: 1,
-    items: [] as ListItem[],
-  })
-
   const templates = useQuery(api.products.getAllTemplates) || []
   const products = useQuery(api.products.getAllProducts) || []
   const createShoppingList = useMutation(api.products.createShoppingList)
 
+  const form = useForm<CreateListFormData>({
+    defaultValues: {
+      name: '',
+      selectedTemplate: '',
+      multiplier: 1,
+      items: [],
+    },
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'items',
+  })
+
   const handleCreateFromTemplate = () => {
-    if (formData.selectedTemplate && formData.name) {
-      const template = templates.find(
-        (t) => t._id === formData.selectedTemplate,
-      )
+    const selectedTemplate = form.getValues('selectedTemplate')
+    const name = form.getValues('name')
+
+    if (selectedTemplate && name) {
+      const template = templates.find((t) => t._id === selectedTemplate)
       if (template) {
         const items = template.products.map((product) => ({
           productId: product.productId,
-          quantity: product.quantity * formData.multiplier,
+          quantity: product.quantity * form.getValues('multiplier'),
           notes: '',
         }))
 
-        setFormData((prev) => ({ ...prev, items }))
+        // Clear existing items and add new ones
+        form.setValue('items', items)
       }
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!formData.name.trim()) {
+  const onSubmit = async (data: CreateListFormData) => {
+    // Manual validation
+    if (!data.name.trim()) {
       toast.error('Nazwa listy jest wymagana')
       return
     }
 
-    if (formData.items.length === 0) {
+    if (data.items.length === 0) {
       toast.error('Dodaj przynajmniej jeden produkt do listy')
       return
     }
 
     try {
-      const itemsWithValidProducts = formData.items.filter(
+      const itemsWithValidProducts = data.items.filter(
         (item) => item.productId && item.quantity > 0,
       )
 
@@ -82,7 +104,7 @@ function CreateList() {
       }
 
       await createShoppingList({
-        name: formData.name,
+        name: data.name,
         items: itemsWithValidProducts.map((item) => ({
           productId: item.productId as Id<'products'>,
           quantity: item.quantity,
@@ -100,37 +122,11 @@ function CreateList() {
   }
 
   const addProductToList = () => {
-    setFormData((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        {
-          productId: '',
-          quantity: 1,
-          notes: '',
-        },
-      ],
-    }))
-  }
-
-  const removeProductFromList = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.filter((_, i) => i !== index),
-    }))
-  }
-
-  const updateProductInList = (
-    index: number,
-    field: keyof ListItem,
-    value: string | number,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item,
-      ),
-    }))
+    append({
+      productId: '',
+      quantity: 1,
+      notes: '',
+    })
   }
 
   return (
@@ -153,152 +149,191 @@ function CreateList() {
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-6 max-w-2xl">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nazwa listy</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="np. Zakupy na weekend"
-                required
-                className="text-lg"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nazwa listy</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="np. Zakupy na weekend"
+                        className="text-lg"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="template">Szablon (opcjonalnie)</Label>
-                <Select
-                  value={formData.selectedTemplate}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      selectedTemplate: value as Id<'templates'> | '',
-                    }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Wybierz szablon" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {templates.map((template) => (
-                      <SelectItem key={template._id} value={template._id}>
-                        {template.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="selectedTemplate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Szablon (opcjonalnie)</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz szablon" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {templates.map((template) => (
+                            <SelectItem key={template._id} value={template._id}>
+                              {template.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="space-y-2">
-                <Label htmlFor="multiplier">Mnożnik</Label>
-                <Input
-                  id="multiplier"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={formData.multiplier}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      multiplier: parseInt(e.target.value) || 1,
-                    }))
-                  }
+                <FormField
+                  control={form.control}
+                  name="multiplier"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mnożnik</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          min="1"
+                          step="1"
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value) || 1)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-            </div>
 
-            {formData.selectedTemplate && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCreateFromTemplate}
-                className="w-full"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Utwórz z szablonu
-              </Button>
-            )}
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <Label className="text-lg font-medium">Produkty</Label>
+              {form.watch('selectedTemplate') && (
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={addProductToList}
+                  onClick={handleCreateFromTemplate}
+                  className="w-full"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Dodaj produkt
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Utwórz z szablonu
                 </Button>
-              </div>
+              )}
 
-              <div className="space-y-3">
-                {formData.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-4 gap-3 items-center p-3 border rounded-lg bg-card"
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <FormLabel className="text-lg font-medium">
+                    Produkty
+                  </FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addProductToList}
                   >
-                    <Select
-                      value={item.productId}
-                      onValueChange={(value) =>
-                        updateProductInList(index, 'productId', value)
-                      }
+                    <Plus className="h-4 w-4 mr-2" />
+                    Dodaj produkt
+                  </Button>
+                </div>
+
+                <div className="space-y-3">
+                  {fields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="grid grid-cols-4 gap-3 items-center p-3 border rounded-lg bg-card"
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Produkt" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {products.map((p) => (
-                          <SelectItem key={p._id} value={p._id}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <FormField
+                        control={form.control}
+                        name={`items.${index}.productId`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Produkt" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {products.map((p) => (
+                                    <SelectItem key={p._id} value={p._id}>
+                                      {p.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <Input
-                      type="number"
-                      min="0.1"
-                      step="0.1"
-                      value={item.quantity}
-                      onChange={(e) =>
-                        updateProductInList(
-                          index,
-                          'quantity',
-                          parseFloat(e.target.value) || 0,
-                        )
-                      }
-                      placeholder="Ilość"
-                    />
+                      <FormField
+                        control={form.control}
+                        name={`items.${index}.quantity`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min="0.1"
+                                step="0.1"
+                                onChange={(e) =>
+                                  field.onChange(
+                                    parseFloat(e.target.value) || 0,
+                                  )
+                                }
+                                placeholder="Ilość"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <Input
-                      value={item.notes}
-                      onChange={(e) =>
-                        updateProductInList(index, 'notes', e.target.value)
-                      }
-                      placeholder="Notatki"
-                    />
+                      <FormField
+                        control={form.control}
+                        name={`items.${index}.notes`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input {...field} placeholder="Notatki" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeProductFromList(index)}
-                      className="h-10 w-10 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => remove(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </Form>
       </main>
 
       {/* Footer */}
@@ -311,7 +346,7 @@ function CreateList() {
             >
               Anuluj
             </Button>
-            <Button onClick={handleSubmit} size="lg">
+            <Button onClick={form.handleSubmit(onSubmit)} size="lg">
               <Save className="h-4 w-4 mr-2" />
               Utwórz listę
             </Button>

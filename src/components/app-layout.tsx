@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
-import { ShoppingCart, FileText, Plus, Home } from 'lucide-react'
+import { ShoppingCart, FileText, Home } from 'lucide-react'
 import { ModeToggle } from './mode-toggle'
 
 interface AppLayoutProps {
@@ -15,7 +15,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     if (pathname === '/') return 'Baskit'
     if (pathname === '/lists') return 'Listy zakupów'
     if (pathname === '/templates') return 'Szablony'
-    if (pathname === '/products') return 'Produkty'
     return 'Baskit'
   }
 
@@ -23,7 +22,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     { href: '/', icon: Home, label: 'Strona główna' },
     { href: '/lists', icon: ShoppingCart, label: 'Listy' },
     { href: '/templates', icon: FileText, label: 'Szablony' },
-    { href: '/products', icon: Plus, label: 'Produkty' },
   ]
 
   return (

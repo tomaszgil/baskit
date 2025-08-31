@@ -1,6 +1,5 @@
 # Tasks
 
-- Migrate all forms to use react-hook-form library
 - Change the create buttons to a FAB
 - Create and add logo
 - Implement shopping mode for lists
@@ -9,3 +8,4 @@
 - Add template editing functionality
 - Research the way to integrate Auth with Convex
 - Integrate with Auth
+- Rename repository front-end application from `src` to `app`

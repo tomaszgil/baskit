@@ -9,18 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProductsRouteImport } from './routes/products'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TemplatesIndexRouteImport } from './routes/templates/index'
 import { Route as ListsIndexRouteImport } from './routes/lists/index'
 import { Route as TemplatesCreateRouteImport } from './routes/templates/create'
 import { Route as ListsCreateRouteImport } from './routes/lists/create'
 
-const ProductsRoute = ProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,7 +43,6 @@ const ListsCreateRoute = ListsCreateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/products': typeof ProductsRoute
   '/lists/create': typeof ListsCreateRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists': typeof ListsIndexRoute
@@ -57,7 +50,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/products': typeof ProductsRoute
   '/lists/create': typeof ListsCreateRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists': typeof ListsIndexRoute
@@ -66,7 +58,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/products': typeof ProductsRoute
   '/lists/create': typeof ListsCreateRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists/': typeof ListsIndexRoute
@@ -76,23 +67,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/products'
     | '/lists/create'
     | '/templates/create'
     | '/lists'
     | '/templates'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/products'
-    | '/lists/create'
-    | '/templates/create'
-    | '/lists'
-    | '/templates'
+  to: '/' | '/lists/create' | '/templates/create' | '/lists' | '/templates'
   id:
     | '__root__'
     | '/'
-    | '/products'
     | '/lists/create'
     | '/templates/create'
     | '/lists/'
@@ -101,7 +84,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ProductsRoute: typeof ProductsRoute
   ListsCreateRoute: typeof ListsCreateRoute
   TemplatesCreateRoute: typeof TemplatesCreateRoute
   ListsIndexRoute: typeof ListsIndexRoute
@@ -110,13 +92,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/products': {
-      id: '/products'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -157,7 +132,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ProductsRoute: ProductsRoute,
   ListsCreateRoute: ListsCreateRoute,
   TemplatesCreateRoute: TemplatesCreateRoute,
   ListsIndexRoute: ListsIndexRoute,
