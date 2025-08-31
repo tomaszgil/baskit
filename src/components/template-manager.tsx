@@ -6,7 +6,7 @@ import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Edit } from 'lucide-react'
 
 export function TemplateManager() {
   const navigate = useNavigate()
@@ -63,7 +63,18 @@ export function TemplateManager() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() =>
+                      navigate({ to: `/templates/${template._id}` })
+                    }
+                    title="Edytuj szablon"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleDelete(template._id)}
+                    title="Usuń szablon"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

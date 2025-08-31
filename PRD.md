@@ -59,6 +59,12 @@ Baskit helps users create and manage grocery shopping lists quickly and easily. 
   - Type: meal / template
   - List of products + quantity
 - **Use case:** Templates allow users to quickly recreate recurring meal/product sets.
+- **Create a template:**
+  - Selecting a list of products + quantity
+- **Edit template:**
+  - Add or remove products.
+  - Change product quantities.
+  - Change type and name.
 
 ### 3.3 Shopping List (Create Mode)
 

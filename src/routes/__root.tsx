@@ -12,10 +12,11 @@ function RootComponent() {
   const isCreateRoute =
     location.pathname === '/lists/create' ||
     location.pathname === '/templates/create'
+  const isEditRoute = location.pathname.startsWith('/templates/')
 
   return (
     <ThemeProvider defaultTheme="dark">
-      {isCreateRoute ? (
+      {isCreateRoute || isEditRoute ? (
         <Outlet />
       ) : (
         <AppLayout>
