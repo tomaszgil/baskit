@@ -86,7 +86,7 @@ export function CurrentListCard() {
   }
 
   return (
-    <Card className={`hover:shadow-md transition-shadow ${className}`}>
+    <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex-1">

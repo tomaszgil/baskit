@@ -11,9 +11,9 @@ interface FABProps {
 
 export function FAB({ onClick, label }: FABProps) {
   return (
-    <div className="fixed right-4 bottom-24 w-full">
-      <div className="flex justify-end container mx-auto max-w-lg">
-        <Card className="p-0 shadow-lg">
+    <div className="fixed right-0 bottom-24 w-full">
+      <div className="flex justify-end container mx-auto max-w-lg px-4">
+        <Card className="absolute p-0 shadow-lg -translate-y-full">
           <Tooltip>
             <TooltipTrigger>
               <Button

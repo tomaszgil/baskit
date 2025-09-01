@@ -264,8 +264,8 @@ export function ShoppingList() {
                     }}
                     className="mt-2"
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Zakupy
+                    <ShoppingCart />
+                    Kupuj
                   </Button>
                 )}
                 <div className="mt-3 text-sm text-muted-foreground">
