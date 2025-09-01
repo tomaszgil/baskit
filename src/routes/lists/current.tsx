@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import { useShopping } from '@/components/shopping-provider'
+import { useShoppingStore } from '@/components/shopping-store'
 import { ArrowLeft, Square } from 'lucide-react'
 
 export const Route = createFileRoute('/lists/current')({
@@ -54,7 +54,7 @@ function getStatusColor(status: string) {
 
 function CurrentShoppingList() {
   const navigate = useNavigate()
-  const { currentListId, stopShopping } = useShopping()
+  const { currentListId, stopShopping } = useShoppingStore()
 
   const lists = useQuery(api.products.getAllShoppingLists) || []
   const products = useQuery(api.products.getAllProducts) || []

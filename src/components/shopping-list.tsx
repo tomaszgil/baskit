@@ -28,7 +28,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import { FAB } from './ui/fab'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
-import { useShopping } from './shopping-provider'
+import { useShoppingStore } from '@/components/shopping-store'
 import {
   Plus,
   Edit,
@@ -69,7 +69,7 @@ export function ShoppingList() {
   const navigate = useNavigate()
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingList, setEditingList] = useState<ShoppingList | null>(null)
-  const { currentListId, startShopping } = useShopping()
+  const { currentListId, startShopping } = useShoppingStore()
 
   const lists = useQuery(api.products.getAllShoppingLists) || []
   const products = useQuery(api.products.getAllProducts) || []

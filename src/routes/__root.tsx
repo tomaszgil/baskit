@@ -1,5 +1,4 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import { ShoppingProvider } from '@/components/shopping-provider'
 import { createRootRoute, Outlet, useLocation } from '@tanstack/react-router'
 import { AppLayout } from '@/components/app-layout'
 import { Toaster } from '@/components/ui/sonner'
@@ -17,16 +16,14 @@ function RootComponent() {
 
   return (
     <ThemeProvider defaultTheme="dark">
-      <ShoppingProvider>
-        {isCreateRoute || isEditRoute ? (
+      {isCreateRoute || isEditRoute ? (
+        <Outlet />
+      ) : (
+        <AppLayout>
           <Outlet />
-        ) : (
-          <AppLayout>
-            <Outlet />
-          </AppLayout>
-        )}
-        <Toaster />
-      </ShoppingProvider>
+        </AppLayout>
+      )}
+      <Toaster />
     </ThemeProvider>
   )
 }

@@ -1,7 +1,7 @@
 import { useQuery } from 'convex/react'
 import { useNavigate } from '@tanstack/react-router'
 import { api } from '~/convex/_generated/api'
-import { useShopping } from './shopping-provider'
+import { useShoppingStore } from '@/components/shopping-store'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
@@ -9,7 +9,7 @@ import { ShoppingCart, Play, Plus, List } from 'lucide-react'
 
 export function CurrentListCard() {
   const navigate = useNavigate()
-  const { currentListId } = useShopping()
+  const { currentListId } = useShoppingStore()
 
   const currentList = useQuery(
     api.products.getShoppingList,
