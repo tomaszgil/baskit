@@ -11,6 +11,7 @@ import { FAB } from './ui/fab'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { useShoppingStore } from '@/components/shopping-store'
 import { Edit, Trash2, CheckCircle, ShoppingCart } from 'lucide-react'
+import { useConfirmDialog } from './confirm-dialog'
 
 interface ShoppingList {
   _id: Id<'shoppingLists'>
@@ -26,38 +27,33 @@ interface ShoppingList {
   updatedAt: number
 }
 
-export function ShoppingList() {
-  const navigate = useNavigate()
-  const { currentListId, startShopping } = useShoppingStore()
+interface ShoppingListCardProps {
+  list: ShoppingList
+  currentListId: Id<'shoppingLists'> | null
+  onEdit: (list: ShoppingList) => void
+  onDelete: (listId: Id<'shoppingLists'>) => Promise<void>
+  onMarkReady: (listId: Id<'shoppingLists'>) => Promise<void>
+  onStartShopping: (listId: Id<'shoppingLists'>) => void
+}
 
-  const lists = useQuery(api.products.getAllShoppingLists) || []
-  const updateShoppingList = useMutation(api.products.updateShoppingList)
-  const deleteShoppingList = useMutation(api.products.deleteShoppingList)
-
-  const handleEdit = (list: ShoppingList) => {
-    navigate({ to: '/lists/$listId', params: { listId: list._id } })
-  }
-
-  const handleDelete = async (listId: Id<'shoppingLists'>) => {
-    if (confirm('Czy na pewno chcesz usunąć tę listę?')) {
-      try {
-        await deleteShoppingList({ id: listId })
-      } catch (error) {
-        console.error('Błąd podczas usuwania listy:', error)
-      }
-    }
-  }
-
-  const handleMarkReady = async (listId: Id<'shoppingLists'>) => {
-    try {
-      await updateShoppingList({
-        id: listId,
-        status: 'ready',
-      })
-    } catch (error) {
-      console.error('Błąd podczas zmiany statusu:', error)
-    }
-  }
+function ShoppingListCard({
+  list,
+  currentListId,
+  onEdit,
+  onDelete,
+  onMarkReady,
+  onStartShopping,
+}: ShoppingListCardProps) {
+  const { openDialog, ConfirmDialog } = useConfirmDialog(
+    async () => {
+      await onDelete(list._id)
+    },
+    {
+      title: 'Usuń listę zakupów',
+      description: `Czy na pewno chcesz usunąć listę "${list.name}"? Ta operacja nie może zostać cofnięta.`,
+      actionLabel: 'Usuń',
+    },
+  )
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -85,98 +81,133 @@ export function ShoppingList() {
     }
   }
 
+  const totalItems = list.items.length
+
+  return (
+    <div>
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <CardTitle className="flex items-center gap-3">
+                <span className="flex items-center gap-2">
+                  {list.name}
+                  {currentListId === list._id && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="relative inline-flex h-2.5 w-2.5">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>W trakcie</TooltipContent>
+                    </Tooltip>
+                  )}
+                </span>
+                <Badge className={getStatusColor(list.status)}>
+                  {getStatusLabel(list.status)}
+                </Badge>
+              </CardTitle>
+              <div className="text-sm text-muted-foreground mt-1">
+                Utworzono:{' '}
+                {new Date(list.createdAt).toLocaleDateString('pl-PL')}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => onEdit(list)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edytuj
+              </Button>
+              <Button variant="outline" size="sm" onClick={openDialog}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Usuń
+              </Button>
+            </div>
+          </div>
+
+          {list.status === 'draft' && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onMarkReady(list._id)}
+              className="mt-2"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Oznacz jako gotową
+            </Button>
+          )}
+
+          {list.status === 'ready' && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => onStartShopping(list._id)}
+              className="mt-2"
+            >
+              <ShoppingCart />
+              Kupuj
+            </Button>
+          )}
+          <div className="mt-3 text-sm text-muted-foreground">
+            Produkty: {totalItems}
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          {/* W trybie listy nie pokazujemy szczegółów */}
+        </CardContent>
+      </Card>
+      {ConfirmDialog}
+    </div>
+  )
+}
+
+export function ShoppingList() {
+  const navigate = useNavigate()
+  const { currentListId, startShopping } = useShoppingStore()
+
+  const lists = useQuery(api.products.getAllShoppingLists) || []
+  const updateShoppingList = useMutation(api.products.updateShoppingList)
+  const deleteShoppingList = useMutation(api.products.deleteShoppingList)
+
+  const handleEdit = (list: ShoppingList) => {
+    navigate({ to: '/lists/$listId', params: { listId: list._id } })
+  }
+
+  const handleDelete = async (listId: Id<'shoppingLists'>) => {
+    await deleteShoppingList({ id: listId })
+  }
+
+  const handleMarkReady = async (listId: Id<'shoppingLists'>) => {
+    try {
+      await updateShoppingList({
+        id: listId,
+        status: 'ready',
+      })
+    } catch (error) {
+      console.error('Błąd podczas zmiany statusu:', error)
+    }
+  }
+
+  const handleStartShopping = (listId: Id<'shoppingLists'>) => {
+    startShopping(listId)
+    navigate({ to: '/shopping' as any })
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4">
-        {lists.map((list) => {
-          const totalItems = list.items.length
-
-          return (
-            <Card key={list._id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-3">
-                      <span className="flex items-center gap-2">
-                        {list.name}
-                        {currentListId === list._id && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="relative inline-flex h-2.5 w-2.5">
-                                <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>W trakcie</TooltipContent>
-                          </Tooltip>
-                        )}
-                      </span>
-                      <Badge className={getStatusColor(list.status)}>
-                        {getStatusLabel(list.status)}
-                      </Badge>
-                    </CardTitle>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      Utworzono:{' '}
-                      {new Date(list.createdAt).toLocaleDateString('pl-PL')}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(list)}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edytuj
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(list._id)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Usuń
-                    </Button>
-                  </div>
-                </div>
-
-                {list.status === 'draft' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleMarkReady(list._id)}
-                    className="mt-2"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Oznacz jako gotową
-                  </Button>
-                )}
-
-                {list.status === 'ready' && (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => {
-                      startShopping(list._id)
-                      navigate({ to: '/shopping' as any })
-                    }}
-                    className="mt-2"
-                  >
-                    <ShoppingCart />
-                    Kupuj
-                  </Button>
-                )}
-                <div className="mt-3 text-sm text-muted-foreground">
-                  Produkty: {totalItems}
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                {/* W trybie listy nie pokazujemy szczegółów */}
-              </CardContent>
-            </Card>
-          )
-        })}
+        {lists.map((list) => (
+          <ShoppingListCard
+            key={list._id}
+            list={list}
+            currentListId={currentListId}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onMarkReady={handleMarkReady}
+            onStartShopping={handleStartShopping}
+          />
+        ))}
       </div>
 
       <FAB
