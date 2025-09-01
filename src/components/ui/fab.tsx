@@ -13,7 +13,7 @@ export function FAB({ onClick, label }: FABProps) {
   return (
     <div className="fixed right-0 bottom-24 w-full">
       <div className="flex justify-end container mx-auto max-w-lg px-4">
-        <Card className="absolute p-0 shadow-lg -translate-y-full">
+        <Card className="absolute p-0 shadow-lg -translate-y-full border-0">
           <Tooltip>
             <TooltipTrigger>
               <Button

@@ -1,43 +1,16 @@
-import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { useNavigate } from '@tanstack/react-router'
-import { useForm, useFieldArray } from 'react-hook-form'
 
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
-import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import { FAB } from './ui/fab'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { useShoppingStore } from '@/components/shopping-store'
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  CheckCircle,
-  X,
-  ShoppingCart,
-} from 'lucide-react'
+import { Edit, Trash2, CheckCircle, ShoppingCart } from 'lucide-react'
 
 interface ShoppingList {
   _id: Id<'shoppingLists'>
@@ -53,91 +26,16 @@ interface ShoppingList {
   updatedAt: number
 }
 
-interface ListItem {
-  productId: Id<'products'> | ''
-  quantity: number
-  notes?: string
-  checked: boolean
-}
-
-interface EditListFormData {
-  name: string
-  items: ListItem[]
-}
-
 export function ShoppingList() {
   const navigate = useNavigate()
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [editingList, setEditingList] = useState<ShoppingList | null>(null)
   const { currentListId, startShopping } = useShoppingStore()
 
   const lists = useQuery(api.products.getAllShoppingLists) || []
-  const products = useQuery(api.products.getAllProducts) || []
-
   const updateShoppingList = useMutation(api.products.updateShoppingList)
   const deleteShoppingList = useMutation(api.products.deleteShoppingList)
 
-  const form = useForm<EditListFormData>({
-    defaultValues: {
-      name: '',
-      items: [],
-    },
-  })
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: 'items',
-  })
-
-  const resetForm = () => {
-    form.reset({
-      name: '',
-      items: [],
-    })
-    setEditingList(null)
-  }
-
-  const addProductToList = () => {
-    append({
-      productId: '' as Id<'products'>,
-      quantity: 1,
-      notes: '',
-      checked: false,
-    })
-  }
-
-  const onSubmit = async (data: EditListFormData) => {
-    if (!editingList) return
-
-    // Filter out items with empty productId
-    const validItems = data.items.filter((item) => item.productId !== '')
-
-    try {
-      await updateShoppingList({
-        id: editingList._id,
-        name: data.name,
-        items: validItems as Array<{
-          productId: Id<'products'>
-          quantity: number
-          notes?: string
-          checked: boolean
-        }>,
-      })
-
-      resetForm()
-      setIsEditDialogOpen(false)
-    } catch (error) {
-      console.error('Błąd podczas zapisywania listy:', error)
-    }
-  }
-
   const handleEdit = (list: ShoppingList) => {
-    setEditingList(list)
-    form.reset({
-      name: list.name,
-      items: list.items,
-    })
-    setIsEditDialogOpen(true)
+    navigate({ to: '/lists/$listId', params: { listId: list._id } })
   }
 
   const handleDelete = async (listId: Id<'shoppingLists'>) => {
@@ -260,7 +158,7 @@ export function ShoppingList() {
                     size="sm"
                     onClick={() => {
                       startShopping(list._id)
-                      navigate({ to: '/lists/current' as any })
+                      navigate({ to: '/shopping' as any })
                     }}
                     className="mt-2"
                   >
@@ -280,144 +178,6 @@ export function ShoppingList() {
           )
         })}
       </div>
-
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edytuj listę</DialogTitle>
-          </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nazwa listy</FormLabel>
-                    <FormControl>
-                      <Input {...field} required />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <FormLabel>Produkty</FormLabel>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addProductToList}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Dodaj produkt
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  {fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className="grid grid-cols-4 gap-2 items-center"
-                    >
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.productId`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Produkt" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {products.map((p) => (
-                                    <SelectItem key={p._id} value={p._id}>
-                                      {p.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.quantity`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0.1"
-                                step="0.1"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                placeholder="Ilość"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.notes`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} placeholder="Notatki" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => remove(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsEditDialogOpen(false)}
-                >
-                  Anuluj
-                </Button>
-                <Button type="submit">
-                  <Save className="h-4 w-4 mr-2" />
-                  Zapisz zmiany
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
 
       <FAB
         onClick={() => navigate({ to: '/lists/create' })}

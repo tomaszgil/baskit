@@ -12,7 +12,9 @@ function RootComponent() {
   const isCreateRoute =
     location.pathname === '/lists/create' ||
     location.pathname === '/templates/create'
-  const isEditRoute = location.pathname.startsWith('/templates/')
+  const isEditRoute =
+    location.pathname.startsWith('/templates/') ||
+    location.pathname.startsWith('/lists/')
 
   return (
     <ThemeProvider defaultTheme="dark">

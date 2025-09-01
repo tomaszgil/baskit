@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
-import { ShoppingCart, FileText, Home } from 'lucide-react'
+import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
 import { ModeToggle } from './mode-toggle'
 
 interface AppLayoutProps {
@@ -14,13 +14,14 @@ export function AppLayout({ children }: AppLayoutProps) {
     const pathname = location.pathname
     if (pathname === '/') return 'Baskit'
     if (pathname === '/lists') return 'Listy zakupów'
-    if (pathname === '/lists/current') return 'Zakupy'
+    if (pathname === '/shopping') return 'Zakupy'
     if (pathname === '/templates') return 'Szablony'
     return 'Baskit'
   }
 
   const navigationItems = [
     { href: '/', icon: Home, label: 'Strona główna' },
+    { href: '/shopping', icon: ShoppingBag, label: 'Zakupy' },
     { href: '/lists', icon: ShoppingCart, label: 'Listy' },
     { href: '/templates', icon: FileText, label: 'Szablony' },
   ]
@@ -43,7 +44,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Footer Navigation */}
       <footer className="w-full border-t bg-background">
         <div className="container mx-auto px-4 max-w-lg">
-          <nav className="grid grid-cols-3 gap-3 py-3">
+          <nav className="grid grid-cols-4 gap-3 py-3">
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.href

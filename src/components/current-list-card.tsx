@@ -122,7 +122,7 @@ export function CurrentListCard() {
           {/* Action buttons */}
           <div className="flex gap-2">
             <Button
-              onClick={() => navigate({ to: '/lists/current' as any })}
+              onClick={() => navigate({ to: '/shopping' as any })}
               className="flex-1"
             >
               <Play className="h-4 w-4 mr-2" />
