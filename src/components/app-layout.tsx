@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
 import { ModeToggle } from './mode-toggle'
+import { useShoppingStore } from './shopping-store'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -9,6 +10,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation()
+  const { currentListId } = useShoppingStore()
 
   const getPageTitle = () => {
     const pathname = location.pathname
@@ -48,6 +50,8 @@ export function AppLayout({ children }: AppLayoutProps) {
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.href
+              const isShoppingActive =
+                item.href === '/shopping' && currentListId
               return (
                 <Link
                   key={item.href}
@@ -58,7 +62,15 @@ export function AppLayout({ children }: AppLayoutProps) {
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <Icon className="h-6 w-6" />
+                  <div className="relative">
+                    <Icon className="h-6 w-6" />
+                    {isShoppingActive && (
+                      <span className="absolute -top-1 -right-1 inline-flex h-2.5 w-2.5">
+                        <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs">{item.label}</span>
                 </Link>
               )
