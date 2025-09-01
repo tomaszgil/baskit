@@ -189,6 +189,30 @@ export const getShoppingListById = query({
   },
 })
 
+export const getShoppingList = query({
+  args: { id: v.id('shoppingLists') },
+  handler: async (ctx, args) => {
+    const list = await ctx.db.get(args.id)
+    if (!list) return null
+
+    // Get product details for each item
+    const itemsWithProducts = await Promise.all(
+      list.items.map(async (item) => {
+        const product = await ctx.db.get(item.productId)
+        return {
+          ...item,
+          product: product || null,
+        }
+      }),
+    )
+
+    return {
+      ...list,
+      items: itemsWithProducts,
+    }
+  },
+})
+
 export const getShoppingListsByStatus = query({
   args: {
     status: v.union(

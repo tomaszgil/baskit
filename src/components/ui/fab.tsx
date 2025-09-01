@@ -22,7 +22,7 @@ export function FAB({ onClick, label }: FABProps) {
                 aria-label={label}
                 className="size-12"
               >
-                <Plus />
+                <Plus className="size-6" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">{label}</TooltipContent>

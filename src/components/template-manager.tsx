@@ -41,10 +41,6 @@ export function TemplateManager() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Szablony</h2>
-      </div>
-
       <div className="grid gap-4 grid-cols-1">
         {templates.map((template) => (
           <Card key={template._id}>

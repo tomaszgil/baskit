@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { CurrentListCard } from '@/components/current-list-card'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -13,6 +14,9 @@ function Index() {
           Twórz listy zakupów szybko i łatwo
         </p>
       </div>
+
+      {/* Current shopping list card */}
+      <CurrentListCard />
     </div>
   )
 }
