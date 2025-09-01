@@ -6,7 +6,8 @@ import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Plus, Trash2, Edit } from 'lucide-react'
+import { FAB } from './ui/fab'
+import { Trash2, Edit } from 'lucide-react'
 
 export function TemplateManager() {
   const navigate = useNavigate()
@@ -42,10 +43,6 @@ export function TemplateManager() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Szablony</h2>
-        <Button onClick={() => navigate({ to: '/templates/create' })}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nowy szablon
-        </Button>
       </div>
 
       <div className="grid gap-4 grid-cols-1">
@@ -107,6 +104,11 @@ export function TemplateManager() {
           </Card>
         ))}
       </div>
+
+      <FAB
+        onClick={() => navigate({ to: '/templates/create' })}
+        label="Utwórz nowy szablon"
+      />
     </div>
   )
 }

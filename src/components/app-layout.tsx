@@ -25,23 +25,23 @@ export function AppLayout({ children }: AppLayoutProps) {
   ]
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background">
+    <div className="h-[100dvh] flex flex-col bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-md">
+      <header className="w-full border-b bg-background">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-lg">
           <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
           <ModeToggle />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-md">
-        {children}
+      <main className="flex-1 relative overflow-y-auto">
+        <div className="container mx-auto p-4 max-w-lg">{children}</div>
       </main>
 
       {/* Footer Navigation */}
-      <footer className="sticky bottom-0 z-50 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 max-w-md">
+      <footer className="w-full border-t bg-background">
+        <div className="container mx-auto px-4 max-w-lg">
           <nav className="grid grid-cols-3 gap-3 py-3">
             {navigationItems.map((item) => {
               const Icon = item.icon

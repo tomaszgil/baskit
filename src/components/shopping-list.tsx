@@ -7,6 +7,7 @@ import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
+import { Badge } from './ui/badge'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import {
@@ -26,6 +27,7 @@ import {
 } from './ui/select'
 import { Checkbox } from './ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { FAB } from './ui/fab'
 import { Plus, Edit, Trash2, Save, CheckCircle, X } from 'lucide-react'
 
 interface ShoppingList {
@@ -205,14 +207,6 @@ export function ShoppingList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Listy zakupów</h2>
-        <Button onClick={() => navigate({ to: '/lists/create' })}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nowa lista
-        </Button>
-      </div>
-
       <div className="grid gap-4">
         {lists.map((list) => {
           const checkedItems = list.items.filter((item) => item.checked).length
@@ -227,13 +221,9 @@ export function ShoppingList() {
                   <div className="flex-1">
                     <CardTitle className="flex items-center gap-3">
                       {list.name}
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                          list.status,
-                        )}`}
-                      >
+                      <Badge className={getStatusColor(list.status)}>
                         {getStatusLabel(list.status)}
-                      </span>
+                      </Badge>
                     </CardTitle>
                     <div className="text-sm text-muted-foreground mt-1">
                       Utworzono:{' '}
@@ -466,6 +456,11 @@ export function ShoppingList() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <FAB
+        onClick={() => navigate({ to: '/lists/create' })}
+        label="Utwórz nową listę zakupów"
+      />
     </div>
   )
 }
