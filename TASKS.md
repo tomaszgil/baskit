@@ -1,6 +1,5 @@
 # Tasks
 
-- Change the create buttons to a FAB
 - Create and add logo
 - Implement shopping mode for lists
 - Move edit list form to a standalone page

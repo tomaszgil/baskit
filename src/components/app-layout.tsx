@@ -14,6 +14,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     const pathname = location.pathname
     if (pathname === '/') return 'Baskit'
     if (pathname === '/lists') return 'Listy zakupów'
+    if (pathname === '/lists/current') return 'Zakupy'
     if (pathname === '/templates') return 'Szablony'
     return 'Baskit'
   }

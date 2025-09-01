@@ -25,10 +25,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select'
-import { Checkbox } from './ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import { FAB } from './ui/fab'
-import { Plus, Edit, Trash2, Save, CheckCircle, X } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { useShopping } from './shopping-provider'
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Save,
+  CheckCircle,
+  X,
+  ShoppingCart,
+} from 'lucide-react'
 
 interface ShoppingList {
   _id: Id<'shoppingLists'>
@@ -60,13 +69,13 @@ export function ShoppingList() {
   const navigate = useNavigate()
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingList, setEditingList] = useState<ShoppingList | null>(null)
+  const { currentListId, startShopping } = useShopping()
 
   const lists = useQuery(api.products.getAllShoppingLists) || []
   const products = useQuery(api.products.getAllProducts) || []
 
   const updateShoppingList = useMutation(api.products.updateShoppingList)
   const deleteShoppingList = useMutation(api.products.deleteShoppingList)
-  const toggleItemChecked = useMutation(api.products.toggleItemChecked)
 
   const form = useForm<EditListFormData>({
     defaultValues: {
@@ -152,33 +161,6 @@ export function ShoppingList() {
     }
   }
 
-  const handleToggleItem = async (
-    listId: Id<'shoppingLists'>,
-    itemIndex: number,
-  ) => {
-    try {
-      await toggleItemChecked({
-        listId,
-        itemIndex,
-      })
-    } catch (error) {
-      console.error('Błąd podczas zaznaczania elementu:', error)
-    }
-  }
-
-  const getUnitLabel = (unit: string) => {
-    switch (unit) {
-      case 'ml':
-        return 'ml'
-      case 'g':
-        return 'g'
-      case 'piece':
-        return 'szt.'
-      default:
-        return unit
-    }
-  }
-
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'draft':
@@ -209,10 +191,7 @@ export function ShoppingList() {
     <div className="space-y-6">
       <div className="grid gap-4">
         {lists.map((list) => {
-          const checkedItems = list.items.filter((item) => item.checked).length
           const totalItems = list.items.length
-          const progress =
-            totalItems > 0 ? (checkedItems / totalItems) * 100 : 0
 
           return (
             <Card key={list._id} className="hover:shadow-md transition-shadow">
@@ -220,7 +199,20 @@ export function ShoppingList() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <CardTitle className="flex items-center gap-3">
-                      {list.name}
+                      <span className="flex items-center gap-2">
+                        {list.name}
+                        {currentListId === list._id && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="relative inline-flex h-2.5 w-2.5">
+                                <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>W trakcie</TooltipContent>
+                          </Tooltip>
+                        )}
+                      </span>
                       <Badge className={getStatusColor(list.status)}>
                         {getStatusLabel(list.status)}
                       </Badge>
@@ -262,57 +254,27 @@ export function ShoppingList() {
                   </Button>
                 )}
 
-                <div className="mt-3">
-                  <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                    <span>
-                      Postęp: {checkedItems}/{totalItems}
-                    </span>
-                    <span>{Math.round(progress)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
+                {list.status === 'ready' && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      startShopping(list._id)
+                      navigate({ to: '/lists/current' as any })
+                    }}
+                    className="mt-2"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Zakupy
+                  </Button>
+                )}
+                <div className="mt-3 text-sm text-muted-foreground">
+                  Produkty: {totalItems}
                 </div>
               </CardHeader>
 
               <CardContent>
-                {list.items.length > 0 && (
-                  <div className="space-y-2">
-                    {list.items.map((item, index) => {
-                      const product = products.find(
-                        (p) => p._id === item.productId,
-                      )
-                      return product ? (
-                        <div
-                          key={index}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-                        >
-                          <Checkbox
-                            checked={item.checked}
-                            onCheckedChange={() =>
-                              handleToggleItem(list._id, index)
-                            }
-                            disabled={list.status === 'completed'}
-                          />
-                          <div className="flex-1">
-                            <div
-                              className={`text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}
-                            >
-                              {product.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {item.quantity} {getUnitLabel(product.unit)}
-                              {item.notes && ` • ${item.notes}`}
-                            </div>
-                          </div>
-                        </div>
-                      ) : null
-                    })}
-                  </div>
-                )}
+                {/* W trybie listy nie pokazujemy szczegółów */}
               </CardContent>
             </Card>
           )

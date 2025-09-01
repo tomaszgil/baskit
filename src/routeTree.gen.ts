@@ -14,6 +14,7 @@ import { Route as TemplatesIndexRouteImport } from './routes/templates/index'
 import { Route as ListsIndexRouteImport } from './routes/lists/index'
 import { Route as TemplatesCreateRouteImport } from './routes/templates/create'
 import { Route as TemplatesTemplateIdRouteImport } from './routes/templates/$templateId'
+import { Route as ListsCurrentRouteImport } from './routes/lists/current'
 import { Route as ListsCreateRouteImport } from './routes/lists/create'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const TemplatesTemplateIdRoute = TemplatesTemplateIdRouteImport.update({
   path: '/templates/$templateId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ListsCurrentRoute = ListsCurrentRouteImport.update({
+  id: '/lists/current',
+  path: '/lists/current',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ListsCreateRoute = ListsCreateRouteImport.update({
   id: '/lists/create',
   path: '/lists/create',
@@ -50,6 +56,7 @@ const ListsCreateRoute = ListsCreateRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/lists/create': typeof ListsCreateRoute
+  '/lists/current': typeof ListsCurrentRoute
   '/templates/$templateId': typeof TemplatesTemplateIdRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists': typeof ListsIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/lists/create': typeof ListsCreateRoute
+  '/lists/current': typeof ListsCurrentRoute
   '/templates/$templateId': typeof TemplatesTemplateIdRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists': typeof ListsIndexRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/lists/create': typeof ListsCreateRoute
+  '/lists/current': typeof ListsCurrentRoute
   '/templates/$templateId': typeof TemplatesTemplateIdRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists/': typeof ListsIndexRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/lists/create'
+    | '/lists/current'
     | '/templates/$templateId'
     | '/templates/create'
     | '/lists'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/lists/create'
+    | '/lists/current'
     | '/templates/$templateId'
     | '/templates/create'
     | '/lists'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/lists/create'
+    | '/lists/current'
     | '/templates/$templateId'
     | '/templates/create'
     | '/lists/'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ListsCreateRoute: typeof ListsCreateRoute
+  ListsCurrentRoute: typeof ListsCurrentRoute
   TemplatesTemplateIdRoute: typeof TemplatesTemplateIdRoute
   TemplatesCreateRoute: typeof TemplatesCreateRoute
   ListsIndexRoute: typeof ListsIndexRoute
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TemplatesTemplateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lists/current': {
+      id: '/lists/current'
+      path: '/lists/current'
+      fullPath: '/lists/current'
+      preLoaderRoute: typeof ListsCurrentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lists/create': {
       id: '/lists/create'
       path: '/lists/create'
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ListsCreateRoute: ListsCreateRoute,
+  ListsCurrentRoute: ListsCurrentRoute,
   TemplatesTemplateIdRoute: TemplatesTemplateIdRoute,
   TemplatesCreateRoute: TemplatesCreateRoute,
   ListsIndexRoute: ListsIndexRoute,
