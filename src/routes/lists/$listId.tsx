@@ -23,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Plus, Save, X } from 'lucide-react'
+import { DialogLayout } from '@/components/layout/dialog-layout'
+import { Plus, Save, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ListItem {
@@ -135,166 +136,142 @@ function EditList() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-2xl">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate({ to: '/lists' })}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-xl font-semibold">Edytuj listę zakupów</h1>
-          </div>
+    <DialogLayout
+      title="Edytuj listę zakupów"
+      actions={
+        <div className="flex justify-between items-center py-4">
+          <Button variant="outline" onClick={() => navigate({ to: '/lists' })}>
+            Anuluj
+          </Button>
+          <Button form="edit-list-form" type="submit" size="lg">
+            <Save className="h-4 w-4 mr-2" />
+            Zapisz zmiany
+          </Button>
         </div>
-      </header>
+      }
+    >
+      <Form {...form}>
+        <form
+          id="edit-list-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nazwa listy</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="np. Zakupy na weekend"
+                      className="text-lg"
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-2xl">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nazwa listy</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="np. Zakupy na weekend"
-                        className="text-lg"
-                        required
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex justify-between items-center">
+                <FormLabel className="text-lg font-medium">Produkty</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addProductToList}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Dodaj produkt
+                </Button>
+              </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg font-medium">
-                    Produkty
-                  </FormLabel>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addProductToList}
+              <div className="space-y-3">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="grid grid-cols-4 gap-3 items-center p-3 border rounded-lg bg-card"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Dodaj produkt
-                  </Button>
-                </div>
+                    <FormField
+                      control={form.control}
+                      name={`items.${index}.productId`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Produkt" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {products.map((p) => (
+                                  <SelectItem key={p._id} value={p._id}>
+                                    {p.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <div className="space-y-3">
-                  {fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className="grid grid-cols-4 gap-3 items-center p-3 border rounded-lg bg-card"
+                    <FormField
+                      control={form.control}
+                      name={`items.${index}.quantity`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0.1"
+                              step="0.1"
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              placeholder="Ilość"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`items.${index}.notes`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} placeholder="Notatki" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => remove(index)}
                     >
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.productId`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Produkt" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {products.map((p) => (
-                                    <SelectItem key={p._id} value={p._id}>
-                                      {p.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.quantity`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0.1"
-                                step="0.1"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                placeholder="Ilość"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.notes`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} placeholder="Notatki" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => remove(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
             </div>
-          </form>
-        </Form>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4 max-w-2xl">
-          <div className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={() => navigate({ to: '/lists' })}
-            >
-              Anuluj
-            </Button>
-            <Button onClick={form.handleSubmit(onSubmit)} size="lg">
-              <Save className="h-4 w-4 mr-2" />
-              Zapisz zmiany
-            </Button>
           </div>
-        </div>
-      </footer>
-    </div>
+        </form>
+      </Form>
+    </DialogLayout>
   )
 }

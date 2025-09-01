@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider'
 import { createRootRoute, Outlet, useLocation } from '@tanstack/react-router'
-import { AppLayout } from '@/components/app-layout'
+import { MainLayout } from '@/components/layout/main-layout'
 import { Toaster } from '@/components/ui/sonner'
 
 export const Route = createRootRoute({
@@ -21,9 +21,9 @@ function RootComponent() {
       {isCreateRoute || isEditRoute ? (
         <Outlet />
       ) : (
-        <AppLayout>
+        <MainLayout>
           <Outlet />
-        </AppLayout>
+        </MainLayout>
       )}
       <Toaster />
     </ThemeProvider>

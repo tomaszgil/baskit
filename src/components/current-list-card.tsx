@@ -17,7 +17,7 @@ export function CurrentListCard() {
   )
 
   // Empty state when no active list
-  if (!currentListId || !currentList) {
+  if (!currentListId) {
     return (
       <Card>
         <CardHeader>
@@ -52,6 +52,10 @@ export function CurrentListCard() {
         </CardContent>
       </Card>
     )
+  }
+
+  if (!currentList) {
+    return null
   }
 
   const checkedItems = currentList.items.filter((item) => item.checked).length

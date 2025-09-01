@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
-import { ModeToggle } from './mode-toggle'
-import { useShoppingStore } from './shopping-store'
+import { ModeToggle } from '../mode-toggle'
+import { useShoppingStore } from '../shopping-store'
 
 interface AppLayoutProps {
   children: ReactNode
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function MainLayout({ children }: AppLayoutProps) {
   const location = useLocation()
   const { currentListId } = useShoppingStore()
 

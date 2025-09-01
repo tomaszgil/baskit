@@ -23,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Plus, Save, X } from 'lucide-react'
+import { DialogLayout } from '@/components/layout/dialog-layout'
+import { Plus, Save, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface TemplateFormData {
@@ -122,84 +123,42 @@ function CreateTemplate() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-2xl">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate({ to: '/templates' })}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-xl font-semibold">Nowy szablon</h1>
-          </div>
+    <DialogLayout
+      title="Nowy szablon"
+      actions={
+        <div className="flex justify-between items-center py-4">
+          <Button
+            variant="outline"
+            onClick={() => navigate({ to: '/templates' })}
+          >
+            Anuluj
+          </Button>
+          <Button form="create-template-form" type="submit" size="lg">
+            <Save className="h-4 w-4 mr-2" />
+            Utwórz szablon
+          </Button>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-2xl">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nazwa</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="np. Pasta Dinner"
-                          className="text-lg"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Typ</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="meal">Posiłek</SelectItem>
-                          <SelectItem value="template">Szablon</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
+      }
+    >
+      <Form {...form}>
+        <form
+          id="create-template-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="description"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Opis</FormLabel>
+                    <FormLabel>Nazwa</FormLabel>
                     <FormControl>
-                      <Textarea
+                      <Input
                         {...field}
-                        placeholder="Opis szablonu..."
-                        className="min-h-[100px] text-lg"
+                        placeholder="np. Pasta Dinner"
+                        className="text-lg"
                       />
                     </FormControl>
                     <FormMessage />
@@ -207,113 +166,134 @@ function CreateTemplate() {
                 )}
               />
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg font-medium">
-                    Produkty
-                  </FormLabel>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addProductToTemplate}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Dodaj produkt
-                  </Button>
-                </div>
-
-                <div className="space-y-3">
-                  {fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className="flex gap-3 items-center p-3 border rounded-lg bg-card"
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Typ</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                     >
-                      <FormField
-                        control={form.control}
-                        name={`products.${index}.productId`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Wybierz produkt" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {products.map((p) => (
-                                    <SelectItem key={p._id} value={p._id}>
-                                      {p.name} ({getUnitLabel(p.unit)})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="meal">Posiłek</SelectItem>
+                        <SelectItem value="template">Szablon</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                      <FormField
-                        control={form.control}
-                        name={`products.${index}.quantity`}
-                        render={({ field }) => (
-                          <FormItem className="w-24">
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0.1"
-                                step="0.1"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                placeholder="Ilość"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Opis</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Opis szablonu..."
+                      className="min-h-[100px] text-lg"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => remove(index)}
-                        className="h-10 w-10 p-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <FormLabel className="text-lg font-medium">Produkty</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addProductToTemplate}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Dodaj produkt
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="flex gap-3 items-center p-3 border rounded-lg bg-card"
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`products.${index}.productId`}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Wybierz produkt" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {products.map((p) => (
+                                  <SelectItem key={p._id} value={p._id}>
+                                    {p.name} ({getUnitLabel(p.unit)})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`products.${index}.quantity`}
+                      render={({ field }) => (
+                        <FormItem className="w-24">
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0.1"
+                              step="0.1"
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              placeholder="Ilość"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => remove(index)}
+                      className="h-10 w-10 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
             </div>
-          </form>
-        </Form>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4 max-w-2xl">
-          <div className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={() => navigate({ to: '/templates' })}
-            >
-              Anuluj
-            </Button>
-            <Button onClick={form.handleSubmit(onSubmit)} size="lg">
-              <Save className="h-4 w-4 mr-2" />
-              Utwórz szablon
-            </Button>
           </div>
-        </div>
-      </footer>
-    </div>
+        </form>
+      </Form>
+    </DialogLayout>
   )
 }
