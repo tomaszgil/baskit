@@ -21,12 +21,13 @@ function RootComponent() {
   const isEditRoute =
     location.pathname.startsWith('/templates/') ||
     location.pathname.startsWith('/lists/')
+  const isLoginRoute = location.pathname === '/login'
 
   return (
     <ThemeProvider defaultTheme="dark">
       <Toaster />
       <Unauthenticated>
-        <Navigate to="/login" replace />
+        {isLoginRoute ? <Outlet /> : <Navigate to="/login" replace />}
       </Unauthenticated>
       <Authenticated>
         {isCreateRoute || isEditRoute ? (
