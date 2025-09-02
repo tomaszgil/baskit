@@ -1,29 +1,11 @@
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 
-// Product mutations
-export const createProduct = mutation({
-  args: {
-    name: v.string(),
-    unit: v.union(v.literal('ml'), v.literal('g'), v.literal('piece')),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert('products', args)
-  },
-})
-
 // Product queries
 export const getAllProducts = query({
   args: {},
   handler: async (ctx) => {
     return await ctx.db.query('products').collect()
-  },
-})
-
-export const getProductById = query({
-  args: { id: v.id('products') },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id)
   },
 })
 
@@ -210,48 +192,5 @@ export const getShoppingList = query({
       ...list,
       items: itemsWithProducts,
     }
-  },
-})
-
-export const getShoppingListsByStatus = query({
-  args: {
-    status: v.union(
-      v.literal('draft'),
-      v.literal('ready'),
-      v.literal('completed'),
-    ),
-  },
-  handler: async (ctx, args) => {
-    const allLists = await ctx.db.query('shoppingLists').collect()
-    return allLists.filter((list) => list.status === args.status)
-  },
-})
-
-// Helper function to create list from template
-export const createListFromTemplate = mutation({
-  args: {
-    templateId: v.id('templates'),
-    multiplier: v.number(),
-    name: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const template = await ctx.db.get(args.templateId)
-    if (!template) throw new Error('Template not found')
-
-    const items = template.products.map((product) => ({
-      productId: product.productId,
-      quantity: product.quantity * args.multiplier,
-      notes: '',
-      checked: false,
-    }))
-
-    const now = Date.now()
-    return await ctx.db.insert('shoppingLists', {
-      name: args.name,
-      status: 'draft',
-      items,
-      createdAt: now,
-      updatedAt: now,
-    })
   },
 })
