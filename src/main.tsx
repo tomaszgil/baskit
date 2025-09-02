@@ -1,7 +1,8 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { ConvexProvider, ConvexReactClient } from 'convex/react'
+import { ConvexReactClient } from 'convex/react'
+import { ConvexAuthProvider } from '@convex-dev/auth/react'
 import { routeTree } from './routeTree.gen'
 import './index.css'
 import '@fontsource-variable/geist'
@@ -24,9 +25,9 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ConvexProvider client={convex}>
+      <ConvexAuthProvider client={convex}>
         <RouterProvider router={router} />
-      </ConvexProvider>
+      </ConvexAuthProvider>
     </StrictMode>,
   )
 }

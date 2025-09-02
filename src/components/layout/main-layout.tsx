@@ -4,6 +4,7 @@ import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
 import logo from '@/assets/logo.svg'
 import { ModeToggle } from '../mode-toggle'
 import { useShoppingStore } from '../shopping-store'
+import { SignOut } from '../auth/SignOut'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -40,7 +41,10 @@ export function MainLayout({ children }: AppLayoutProps) {
       <header className="w-full border-b bg-background">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-lg">
           <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
-          <ModeToggle />
+          <div className="flex items-center gap-2">
+            <ModeToggle />
+            <SignOut />
+          </div>
         </div>
       </header>
 
