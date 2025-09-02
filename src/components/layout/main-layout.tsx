@@ -4,7 +4,7 @@ import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
 import logo from '@/assets/logo.svg'
 import { ModeToggle } from '../mode-toggle'
 import { useShoppingStore } from '../shopping-store'
-import { SignOut } from '../auth/SignOut'
+import { SignOut } from '../auth/sign-out'
 
 interface AppLayoutProps {
   children: ReactNode

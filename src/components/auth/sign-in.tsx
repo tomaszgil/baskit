@@ -33,7 +33,7 @@ export function SignInWithGoogle() {
       type="button"
       onClick={() => void signIn('google')}
     >
-      <GoogleLogo className="mr-2 h-4 w-4" /> Google
+      <GoogleLogo className="h-4 w-4" /> Login with Google
     </Button>
   )
 }

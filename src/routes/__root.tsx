@@ -1,9 +1,13 @@
 import { Authenticated, Unauthenticated } from 'convex/react'
 import { ThemeProvider } from '@/components/theme-provider'
-import { createRootRoute, Outlet, useLocation } from '@tanstack/react-router'
+import {
+  createRootRoute,
+  Navigate,
+  Outlet,
+  useLocation,
+} from '@tanstack/react-router'
 import { MainLayout } from '@/components/layout/main-layout'
 import { Toaster } from '@/components/ui/sonner'
-import { SignInWithGoogle } from '@/components/auth/SignInWithGoogle'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -20,8 +24,9 @@ function RootComponent() {
 
   return (
     <ThemeProvider defaultTheme="dark">
+      <Toaster />
       <Unauthenticated>
-        <SignInWithGoogle />
+        <Navigate to="/login" replace />
       </Unauthenticated>
       <Authenticated>
         {isCreateRoute || isEditRoute ? (
@@ -31,7 +36,6 @@ function RootComponent() {
             <Outlet />
           </MainLayout>
         )}
-        <Toaster />
       </Authenticated>
     </ThemeProvider>
   )
