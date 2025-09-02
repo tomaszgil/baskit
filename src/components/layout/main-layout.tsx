@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
+import logo from '@/assets/logo.svg'
 import { ModeToggle } from '../mode-toggle'
 import { useShoppingStore } from '../shopping-store'
 
@@ -14,7 +15,12 @@ export function MainLayout({ children }: AppLayoutProps) {
 
   const getPageTitle = () => {
     const pathname = location.pathname
-    if (pathname === '/') return 'Baskit'
+    if (pathname === '/')
+      return (
+        <span className="flex items-center gap-3">
+          <img src={logo} alt="Baskit" className="h-8 w-8" /> Baskit
+        </span>
+      )
     if (pathname === '/lists') return 'Listy zakupów'
     if (pathname === '/shopping') return 'Zakupy'
     if (pathname === '/templates') return 'Szablony'
