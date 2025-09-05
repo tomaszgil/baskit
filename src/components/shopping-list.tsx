@@ -19,6 +19,7 @@ import {
   ClipboardList,
 } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
+import { toast } from 'sonner'
 
 interface ShoppingList {
   _id: Id<'lists'>
@@ -41,7 +42,7 @@ interface ShoppingListCardProps {
   onDelete: (listId: Id<'lists'>) => Promise<void>
   onMarkReady: (listId: Id<'lists'>) => Promise<void>
   onStartShopping: (listId: Id<'lists'>) => void
-  onFinishShopping: () => void
+  onFinishShopping: (listId: Id<'lists'>) => Promise<void>
 }
 
 function ShoppingListCard({
@@ -63,6 +64,23 @@ function ShoppingListCard({
       actionLabel: 'Usuń',
     },
   )
+
+  const checkedItems = list.items.filter((i) => i.checked).length
+  const allItemsChecked = checkedItems === list.items.length
+
+  const { openDialog: openFinishDialog, ConfirmDialog: FinishConfirmDialog } =
+    useConfirmDialog(
+      async () => {
+        await onFinishShopping(list._id)
+      },
+      {
+        title: 'Ukończ listę zakupów',
+        description: allItemsChecked
+          ? 'Czy na pewno chcesz ukończyć tę listę zakupów?'
+          : `Nie wszystkie produkty zostały zaznaczone (${checkedItems}/${list.items.length}). Czy na pewno chcesz ukończyć listę zakupów?`,
+        actionLabel: 'Ukończ',
+      },
+    )
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -89,8 +107,6 @@ function ShoppingListCard({
         return 'bg-gray-100 text-gray-800'
     }
   }
-
-  const totalItems = list.items.length
 
   return (
     <div>
@@ -158,7 +174,7 @@ function ShoppingListCard({
                 Kupuj
               </Button>
               {currentListId === list._id && (
-                <Button variant="outline" size="sm" onClick={onFinishShopping}>
+                <Button variant="outline" size="sm" onClick={openFinishDialog}>
                   <CheckCircle />
                   Zakończ
                 </Button>
@@ -166,7 +182,7 @@ function ShoppingListCard({
             </div>
           )}
           <div className="mt-3 text-sm text-muted-foreground">
-            Produkty: {totalItems}
+            Produkty: {list.items.length}
           </div>
         </CardHeader>
 
@@ -175,6 +191,7 @@ function ShoppingListCard({
         </CardContent>
       </Card>
       {ConfirmDialog}
+      {FinishConfirmDialog}
     </div>
   )
 }
@@ -211,6 +228,17 @@ export function ShoppingList() {
     navigate({ to: '/shopping' })
   }
 
+  const handleFinishShopping = async (listId: Id<'lists'>) => {
+    try {
+      await updateShoppingList({ id: listId, status: 'completed' })
+      stopShopping()
+      toast.success('Lista zakupów została ukończona!')
+    } catch (error) {
+      console.error('Błąd podczas ukończenia listy:', error)
+      toast.error('Wystąpił błąd podczas ukończenia listy')
+    }
+  }
+
   if (lists.length === 0) {
     return (
       <EmptyState
@@ -238,7 +266,7 @@ export function ShoppingList() {
             onDelete={handleDelete}
             onMarkReady={handleMarkReady}
             onStartShopping={handleStartShopping}
-            onFinishShopping={stopShopping}
+            onFinishShopping={handleFinishShopping}
           />
         ))}
       </div>

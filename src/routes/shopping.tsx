@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { useShoppingStore } from '@/components/shopping-store'
+import { useConfirmDialog } from '@/components/confirm-dialog'
 import { ArrowLeft, Square, ShoppingCart, Plus, List } from 'lucide-react'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/shopping')({
   component: ShoppingPage,
@@ -58,8 +60,38 @@ function ShoppingPage() {
   const lists = useQuery(api.lists.getLists) || []
   const products = useQuery(api.products.getProducts) || []
   const toggleItemChecked = useMutation(api.lists.toggleItemChecked)
+  const updateList = useMutation(api.lists.updateList)
 
   const current = lists.find((l) => l._id === currentListId) || null
+
+  const handleFinishShopping = async () => {
+    if (!current) return
+
+    try {
+      await updateList({ id: current._id, status: 'completed' })
+      stopShopping()
+      navigate({ to: '/lists' })
+      toast.success('Lista zakupów została ukończona!')
+    } catch (error) {
+      console.error('Błąd podczas ukończenia listy:', error)
+      toast.error('Wystąpił błąd podczas ukończenia listy')
+    }
+  }
+
+  const { openDialog, ConfirmDialog } = useConfirmDialog(handleFinishShopping, {
+    title: 'Ukończ listę zakupów',
+    description: current
+      ? (() => {
+          const checkedItems = current.items.filter((i) => i.checked).length
+          const totalItems = current.items.length
+          const allItemsChecked = checkedItems === totalItems
+          return allItemsChecked
+            ? 'Czy na pewno chcesz ukończyć tę listę zakupów?'
+            : `Nie wszystkie produkty zostały zaznaczone (${checkedItems}/${totalItems}). Czy na pewno chcesz ukończyć listę zakupów?`
+        })()
+      : 'Czy na pewno chcesz ukończyć tę listę zakupów?',
+    actionLabel: 'Ukończ',
+  })
 
   // Empty state when no active list
   if (!currentListId || !current) {
@@ -97,6 +129,7 @@ function ShoppingPage() {
             </div>
           </CardContent>
         </Card>
+        {ConfirmDialog}
       </div>
     )
   }
@@ -104,6 +137,7 @@ function ShoppingPage() {
   const checkedItems = current.items.filter((i) => i.checked).length
   const totalItems = current.items.length
   const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0
+  const allItemsChecked = checkedItems === totalItems
 
   return (
     <div className="space-y-4">
@@ -114,14 +148,7 @@ function ShoppingPage() {
             Strona główna
           </Link>
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            stopShopping()
-            navigate({ to: '/lists' })
-          }}
-        >
+        <Button variant="outline" size="sm" onClick={openDialog}>
           <Square className="h-4 w-4 mr-2" />
           Zakończ
         </Button>
@@ -187,6 +214,7 @@ function ShoppingPage() {
           </div>
         </CardContent>
       </Card>
+      {ConfirmDialog}
     </div>
   )
 }
