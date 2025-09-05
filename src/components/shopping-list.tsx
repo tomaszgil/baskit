@@ -41,6 +41,7 @@ interface ShoppingListCardProps {
   onDelete: (listId: Id<'lists'>) => Promise<void>
   onMarkReady: (listId: Id<'lists'>) => Promise<void>
   onStartShopping: (listId: Id<'lists'>) => void
+  onFinishShopping: () => void
 }
 
 function ShoppingListCard({
@@ -50,6 +51,7 @@ function ShoppingListCard({
   onDelete,
   onMarkReady,
   onStartShopping,
+  onFinishShopping,
 }: ShoppingListCardProps) {
   const { openDialog, ConfirmDialog } = useConfirmDialog(
     async () => {
@@ -145,15 +147,23 @@ function ShoppingListCard({
           )}
 
           {list.status === 'ready' && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => onStartShopping(list._id)}
-              className="mt-2"
-            >
-              <ShoppingCart />
-              Kupuj
-            </Button>
+            <div className="flex gap-2 mt-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => onStartShopping(list._id)}
+                className="flex-1"
+              >
+                <ShoppingCart />
+                Kupuj
+              </Button>
+              {currentListId === list._id && (
+                <Button variant="outline" size="sm" onClick={onFinishShopping}>
+                  <CheckCircle />
+                  Zakończ
+                </Button>
+              )}
+            </div>
           )}
           <div className="mt-3 text-sm text-muted-foreground">
             Produkty: {totalItems}
@@ -171,7 +181,7 @@ function ShoppingListCard({
 
 export function ShoppingList() {
   const navigate = useNavigate()
-  const { currentListId, startShopping } = useShoppingStore()
+  const { currentListId, startShopping, stopShopping } = useShoppingStore()
 
   const lists = useQuery(api.lists.getLists) || []
   const updateShoppingList = useMutation(api.lists.updateList)
@@ -228,6 +238,7 @@ export function ShoppingList() {
             onDelete={handleDelete}
             onMarkReady={handleMarkReady}
             onStartShopping={handleStartShopping}
+            onFinishShopping={stopShopping}
           />
         ))}
       </div>
