@@ -7,7 +7,8 @@ import type { Id } from '~/convex/_generated/dataModel'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { FAB } from './ui/fab'
-import { Trash2, Edit } from 'lucide-react'
+import { EmptyState } from './ui/empty-state'
+import { Trash2, Edit, ClipboardList } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
 
 interface Template {
@@ -134,6 +135,21 @@ export function TemplateManager() {
 
   const handleDelete = async (templateId: Id<'templates'>) => {
     await deleteTemplate({ id: templateId })
+  }
+
+  if (templates.length === 0) {
+    return (
+      <EmptyState
+        illustration={<ClipboardList className="h-16 w-16 text-gray-300" />}
+        title="Brak szablonów"
+        description="Utwórz swój pierwszy szablon, aby szybko tworzyć powtarzalne listy zakupów. Szablony pomogą Ci zaoszczędzić czas przy planowaniu posiłków i zakupów."
+        action={
+          <Button onClick={() => navigate({ to: '/templates/create' })}>
+            Utwórz pierwszy szablon
+          </Button>
+        }
+      />
+    )
   }
 
   return (

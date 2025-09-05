@@ -9,8 +9,15 @@ import { Badge } from './ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { FAB } from './ui/fab'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { EmptyState } from './ui/empty-state'
 import { useShoppingStore } from '@/components/shopping-store'
-import { Edit, Trash2, CheckCircle, ShoppingCart } from 'lucide-react'
+import {
+  Edit,
+  Trash2,
+  CheckCircle,
+  ShoppingCart,
+  ClipboardList,
+} from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
 
 interface ShoppingList {
@@ -192,6 +199,21 @@ export function ShoppingList() {
   const handleStartShopping = (listId: Id<'shoppingLists'>) => {
     startShopping(listId)
     navigate({ to: '/shopping' as any })
+  }
+
+  if (lists.length === 0) {
+    return (
+      <EmptyState
+        illustration={<ClipboardList className="h-16 w-16 text-gray-300" />}
+        title="Brak list zakupów"
+        description="Utwórz swoją pierwszą listę zakupów, aby rozpocząć organizowanie zakupów. Możesz tworzyć listy od podstaw lub używać gotowych szablonów."
+        action={
+          <Button onClick={() => navigate({ to: '/lists/create' })}>
+            Utwórz pierwszą listę
+          </Button>
+        }
+      />
+    )
   }
 
   return (
