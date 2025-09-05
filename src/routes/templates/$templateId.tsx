@@ -46,11 +46,11 @@ function EditTemplate() {
   const navigate = useNavigate()
   const { templateId } = useParams({ from: '/templates/$templateId' })
 
-  const template = useQuery(api.products.getTemplateById, {
+  const template = useQuery(api.templates.getTemplateById, {
     id: templateId as Id<'templates'>,
   })
-  const products = useQuery(api.products.getAllProducts) || []
-  const updateTemplate = useMutation(api.products.updateTemplate)
+  const products = useQuery(api.products.getProducts) || []
+  const updateTemplate = useMutation(api.templates.updateTemplate)
 
   const form = useForm<TemplateFormData>({
     defaultValues: {

@@ -43,8 +43,8 @@ export const Route = createFileRoute('/templates/create')({
 
 function CreateTemplate() {
   const navigate = useNavigate()
-  const products = useQuery(api.products.getAllProducts) || []
-  const createTemplate = useMutation(api.products.createTemplate)
+  const products = useQuery(api.products.getProducts) || []
+  const createTemplate = useMutation(api.templates.createTemplate)
 
   const form = useForm<TemplateFormData>({
     defaultValues: {

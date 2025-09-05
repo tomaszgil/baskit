@@ -45,9 +45,9 @@ export const Route = createFileRoute('/lists/create')({
 
 function CreateList() {
   const navigate = useNavigate()
-  const templates = useQuery(api.products.getAllTemplates) || []
-  const products = useQuery(api.products.getAllProducts) || []
-  const createShoppingList = useMutation(api.products.createShoppingList)
+  const templates = useQuery(api.templates.getTemplates) || []
+  const products = useQuery(api.products.getProducts) || []
+  const createShoppingList = useMutation(api.lists.createList)
 
   const form = useForm<CreateListFormData>({
     defaultValues: {

@@ -46,11 +46,11 @@ export const Route = createFileRoute('/lists/$listId')({
 function EditList() {
   const navigate = useNavigate()
   const { listId } = Route.useParams()
-  const products = useQuery(api.products.getAllProducts) || []
-  const shoppingList = useQuery(api.products.getShoppingListById, {
-    id: listId as Id<'shoppingLists'>,
+  const products = useQuery(api.products.getProducts) || []
+  const shoppingList = useQuery(api.lists.getListById, {
+    id: listId as Id<'lists'>,
   })
-  const updateShoppingList = useMutation(api.products.updateShoppingList)
+  const updateShoppingList = useMutation(api.lists.updateList)
 
   const form = useForm<EditListFormData>({
     defaultValues: {
@@ -105,7 +105,7 @@ function EditList() {
       }
 
       await updateShoppingList({
-        id: listId as Id<'shoppingLists'>,
+        id: listId as Id<'lists'>,
         name: data.name,
         items: validItems as Array<{
           productId: Id<'products'>
