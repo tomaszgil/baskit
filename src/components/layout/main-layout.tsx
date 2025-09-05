@@ -4,7 +4,7 @@ import { ShoppingCart, FileText, Home, ShoppingBag } from 'lucide-react'
 import logo from '@/assets/logo.svg'
 import { ModeToggle } from '../mode-toggle'
 import { useShoppingStore } from '../shopping-store'
-import { SignOut } from '../auth/sign-out'
+import { NavProfile } from '../auth/nav-profile'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -43,7 +43,7 @@ export function MainLayout({ children }: AppLayoutProps) {
           <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
           <div className="flex items-center gap-2">
             <ModeToggle />
-            <SignOut />
+            <NavProfile />
           </div>
         </div>
       </header>

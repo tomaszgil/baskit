@@ -1,5 +1,6 @@
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
+import { getAuthUserId } from '@convex-dev/auth/server'
 
 // Product queries
 export const getAllProducts = query({
@@ -23,9 +24,14 @@ export const createTemplate = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) throw new Error('User not found')
+
     const now = Date.now()
     return await ctx.db.insert('templates', {
       ...args,
+      userId,
       createdAt: now,
       updatedAt: now,
     })
@@ -90,9 +96,14 @@ export const createShoppingList = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) throw new Error('User not found')
+
     const now = Date.now()
     return await ctx.db.insert('shoppingLists', {
       ...args,
+      userId,
       status: 'draft',
       createdAt: now,
       updatedAt: now,

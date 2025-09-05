@@ -11,6 +11,7 @@ export default defineSchema({
   }),
 
   templates: defineTable({
+    userId: v.id('users'),
     name: v.string(),
     description: v.string(),
     type: v.union(v.literal('meal'), v.literal('template')),
@@ -22,9 +23,10 @@ export default defineSchema({
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }),
+  }).index('by_user', ['userId']),
 
   shoppingLists: defineTable({
+    userId: v.id('users'),
     name: v.string(),
     status: v.union(
       v.literal('draft'),
@@ -41,5 +43,5 @@ export default defineSchema({
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index('by_status', ['status']),
+  }).index('by_user', ['userId']),
 })

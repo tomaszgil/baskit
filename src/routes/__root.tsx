@@ -1,4 +1,4 @@
-import { Authenticated, Unauthenticated } from 'convex/react'
+import { Authenticated, AuthLoading, Unauthenticated } from 'convex/react'
 import { ThemeProvider } from '@/components/theme-provider'
 import {
   createRootRoute,
@@ -26,6 +26,9 @@ function RootComponent() {
   return (
     <ThemeProvider defaultTheme="dark">
       <Toaster />
+      <AuthLoading>
+        <div>Loading...</div>
+      </AuthLoading>
       <Unauthenticated>
         {isLoginRoute ? <Outlet /> : <Navigate to="/login" replace />}
       </Unauthenticated>
