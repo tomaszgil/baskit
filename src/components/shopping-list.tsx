@@ -21,7 +21,7 @@ import {
 import { useConfirmDialog } from './confirm-dialog'
 
 interface ShoppingList {
-  _id: Id<'shoppingLists'>
+  _id: Id<'lists'>
   name: string
   status: 'draft' | 'ready' | 'completed'
   items: Array<{
@@ -36,11 +36,11 @@ interface ShoppingList {
 
 interface ShoppingListCardProps {
   list: ShoppingList
-  currentListId: Id<'shoppingLists'> | null
+  currentListId: Id<'lists'> | null
   onEdit: (list: ShoppingList) => void
-  onDelete: (listId: Id<'shoppingLists'>) => Promise<void>
-  onMarkReady: (listId: Id<'shoppingLists'>) => Promise<void>
-  onStartShopping: (listId: Id<'shoppingLists'>) => void
+  onDelete: (listId: Id<'lists'>) => Promise<void>
+  onMarkReady: (listId: Id<'lists'>) => Promise<void>
+  onStartShopping: (listId: Id<'lists'>) => void
 }
 
 function ShoppingListCard({
@@ -173,19 +173,19 @@ export function ShoppingList() {
   const navigate = useNavigate()
   const { currentListId, startShopping } = useShoppingStore()
 
-  const lists = useQuery(api.products.getAllShoppingLists) || []
-  const updateShoppingList = useMutation(api.products.updateShoppingList)
-  const deleteShoppingList = useMutation(api.products.deleteShoppingList)
+  const lists = useQuery(api.lists.getLists) || []
+  const updateShoppingList = useMutation(api.lists.updateList)
+  const deleteShoppingList = useMutation(api.lists.deleteList)
 
   const handleEdit = (list: ShoppingList) => {
     navigate({ to: '/lists/$listId', params: { listId: list._id } })
   }
 
-  const handleDelete = async (listId: Id<'shoppingLists'>) => {
+  const handleDelete = async (listId: Id<'lists'>) => {
     await deleteShoppingList({ id: listId })
   }
 
-  const handleMarkReady = async (listId: Id<'shoppingLists'>) => {
+  const handleMarkReady = async (listId: Id<'lists'>) => {
     try {
       await updateShoppingList({
         id: listId,
@@ -196,9 +196,9 @@ export function ShoppingList() {
     }
   }
 
-  const handleStartShopping = (listId: Id<'shoppingLists'>) => {
+  const handleStartShopping = (listId: Id<'lists'>) => {
     startShopping(listId)
-    navigate({ to: '/shopping' as any })
+    navigate({ to: '/shopping' })
   }
 
   if (lists.length === 0) {

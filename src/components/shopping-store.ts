@@ -3,8 +3,8 @@ import { persist } from 'zustand/middleware'
 import type { Id } from '~/convex/_generated/dataModel'
 
 interface ShoppingState {
-  currentListId: Id<'shoppingLists'> | null
-  startShopping: (listId: Id<'shoppingLists'>) => void
+  currentListId: Id<'lists'> | null
+  startShopping: (listId: Id<'lists'>) => void
   stopShopping: () => void
 }
 

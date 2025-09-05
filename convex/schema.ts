@@ -25,7 +25,7 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index('by_user', ['userId']),
 
-  shoppingLists: defineTable({
+  lists: defineTable({
     userId: v.id('users'),
     name: v.string(),
     status: v.union(

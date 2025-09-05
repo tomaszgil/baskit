@@ -12,7 +12,7 @@ export function CurrentListCard() {
   const { currentListId } = useShoppingStore()
 
   const currentList = useQuery(
-    api.products.getShoppingList,
+    api.lists.getListById,
     currentListId ? { id: currentListId } : 'skip',
   )
 

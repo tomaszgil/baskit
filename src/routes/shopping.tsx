@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '~/convex/_generated/api'
-import type { Id } from '~/convex/_generated/dataModel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -56,9 +55,9 @@ function ShoppingPage() {
   const navigate = useNavigate()
   const { currentListId, stopShopping } = useShoppingStore()
 
-  const lists = useQuery(api.products.getAllShoppingLists) || []
-  const products = useQuery(api.products.getAllProducts) || []
-  const toggleItemChecked = useMutation(api.products.toggleItemChecked)
+  const lists = useQuery(api.lists.getLists) || []
+  const products = useQuery(api.products.getProducts) || []
+  const toggleItemChecked = useMutation(api.lists.toggleItemChecked)
 
   const current = lists.find((l) => l._id === currentListId) || null
 
@@ -165,7 +164,7 @@ function ShoppingPage() {
                     checked={item.checked}
                     onCheckedChange={async () => {
                       await toggleItemChecked({
-                        listId: current._id as Id<'shoppingLists'>,
+                        listId: current._id,
                         itemIndex: index,
                       })
                     }}

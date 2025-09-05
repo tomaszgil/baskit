@@ -125,9 +125,9 @@ function TemplateCard({
 export function TemplateManager() {
   const navigate = useNavigate()
 
-  const templates = useQuery(api.products.getAllTemplates) || []
-  const products = useQuery(api.products.getAllProducts) || []
-  const deleteTemplate = useMutation(api.products.deleteTemplate)
+  const templates = useQuery(api.templates.getTemplates) || []
+  const products = useQuery(api.products.getProducts) || []
+  const deleteTemplate = useMutation(api.templates.deleteTemplate)
 
   const handleEdit = (templateId: Id<'templates'>) => {
     navigate({ to: `/templates/${templateId}` })
