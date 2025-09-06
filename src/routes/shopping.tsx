@@ -59,7 +59,7 @@ function ShoppingPage() {
 
   const lists = useQuery(api.lists.getLists) || []
   const products = useQuery(api.products.getProducts) || []
-  const toggleItemChecked = useMutation(api.lists.toggleItemChecked)
+  const setItemChecked = useMutation(api.lists.setItemChecked)
   const updateList = useMutation(api.lists.updateList)
 
   const current = lists.find((l) => l._id === currentListId) || null
@@ -188,10 +188,11 @@ function ShoppingPage() {
                 >
                   <Checkbox
                     checked={item.checked}
-                    onCheckedChange={async () => {
-                      await toggleItemChecked({
+                    onCheckedChange={async (checked) => {
+                      await setItemChecked({
                         listId: current._id,
-                        itemIndex: index,
+                        productId: item.productId,
+                        checked: !!checked,
                       })
                     }}
                     disabled={current.status === 'completed'}

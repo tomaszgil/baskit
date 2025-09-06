@@ -79,10 +79,11 @@ export const deleteList = mutation({
   },
 })
 
-export const toggleItemChecked = mutation({
+export const setItemChecked = mutation({
   args: {
     listId: v.id('lists'),
-    itemIndex: v.number(),
+    productId: v.id('products'),
+    checked: v.boolean(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -93,9 +94,13 @@ export const toggleItemChecked = mutation({
     if (list.userId !== userId) throw new Error('User not authorized')
 
     const newItems = [...list.items]
-    newItems[args.itemIndex] = {
-      ...newItems[args.itemIndex],
-      checked: !newItems[args.itemIndex].checked,
+    const productIndex = newItems.findIndex(
+      (item) => item.productId === args.productId,
+    )
+    if (productIndex === -1) throw new Error('Product not found')
+    newItems[productIndex] = {
+      ...newItems[productIndex],
+      checked: args.checked,
     }
 
     await ctx.db.patch(args.listId, {
