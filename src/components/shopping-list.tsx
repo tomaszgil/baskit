@@ -30,8 +30,10 @@ import {
   ShoppingCart,
   ClipboardList,
   MoreHorizontal,
+  Calendar,
 } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
 interface ShoppingList {
   _id: Id<'lists'>
@@ -171,10 +173,10 @@ function ShoppingListCard({
   }
 
   return (
-    <div>
+    <>
       <Card>
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="flex items-center gap-2">
             {list.status === 'draft' && (
               <Link to={`/lists/$listId/edit`} params={{ listId: list._id }}>
                 {list.name}
@@ -186,27 +188,37 @@ function ShoppingListCard({
               </Link>
             )}
             {list.status === 'completed' && list.name}
-          </CardTitle>
-          <CardDescription>
             <Badge className={getStatusColor(list.status)}>
               {getStatusLabel(list.status)}
             </Badge>
+          </CardTitle>
+          <CardDescription>
+            <div className="flex gap-4 items-center">
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="flex items-center gap-1">
+                    <ClipboardList className="h-4 w-4" />
+                    {list.items.length}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Liczba produktów</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(list.createdAt).toLocaleDateString('pl-PL')}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Data utworzenia</TooltipContent>
+              </Tooltip>
+            </div>
           </CardDescription>
           {renderActions()}
-
-          <CardContent>
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <ClipboardList className="h-4 w-4" />
-              {list.items.length}
-            </div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Utworzono: {new Date(list.createdAt).toLocaleDateString('pl-PL')}
-            </div>
-          </CardContent>
         </CardHeader>
       </Card>
       {ConfirmDialog}
-    </div>
+    </>
   )
 }
 
@@ -223,27 +235,28 @@ export function ShoppingList() {
       <div className="space-y-6">
         <div className="grid gap-4">
           {Array.from({ length: 3 }).map((_, index) => (
-            <Card key={index} className="hover:shadow-md transition-shadow">
+            <Card key={index}>
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <Skeleton className="h-6 w-48" />
                       <Skeleton className="h-6 w-16" />
                     </div>
-                    <Skeleton className="h-4 w-32 mt-2" />
+                    <div className="flex gap-4 items-center mt-2">
+                      <div className="flex items-center gap-1">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-8" />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Skeleton className="h-8 w-16" />
-                    <Skeleton className="h-8 w-16" />
-                  </div>
+                  <Skeleton className="h-8 w-8" />
                 </div>
-                <Skeleton className="h-8 w-40 mt-2" />
-                <Skeleton className="h-4 w-20 mt-3" />
               </CardHeader>
-              <CardContent>
-                <Skeleton className="h-4 w-full" />
-              </CardContent>
             </Card>
           ))}
         </div>
