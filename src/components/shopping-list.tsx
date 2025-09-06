@@ -11,6 +11,12 @@ import { FAB } from './ui/fab'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { EmptyState } from './ui/empty-state'
 import { Skeleton } from './ui/skeleton'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
 import { useShoppingStore } from '@/components/shopping-store'
 import {
   Edit,
@@ -18,6 +24,7 @@ import {
   CheckCircle,
   ShoppingCart,
   ClipboardList,
+  MoreHorizontal,
 } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
 import { toast } from 'sonner'
@@ -42,6 +49,7 @@ interface ShoppingListCardProps {
   onEdit: (list: ShoppingList) => void
   onDelete: (listId: Id<'lists'>) => Promise<void>
   onMarkReady: (listId: Id<'lists'>) => Promise<void>
+  onMarkDraft: (listId: Id<'lists'>) => Promise<void>
   onStartShopping: (listId: Id<'lists'>) => void
   onFinishShopping: (listId: Id<'lists'>) => Promise<void>
 }
@@ -52,6 +60,7 @@ function ShoppingListCard({
   onEdit,
   onDelete,
   onMarkReady,
+  onMarkDraft,
   onStartShopping,
   onFinishShopping,
 }: ShoppingListCardProps) {
@@ -109,6 +118,101 @@ function ShoppingListCard({
     }
   }
 
+  const renderActions = () => {
+    const isCurrentlyShopping = currentListId === list._id
+    const isReadyAndShopping = list.status === 'ready' && isCurrentlyShopping
+
+    const getDropdownItems = () => {
+      switch (list.status) {
+        case 'draft':
+          return (
+            <>
+              <DropdownMenuItem onClick={() => onMarkReady(list._id)}>
+                <CheckCircle className="h-4 w-4" />
+                Oznacz jako gotową
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(list)}>
+                <Edit className="h-4 w-4" />
+                Edytuj
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={openDialog} variant="destructive">
+                <Trash2 className="h-4 w-4" />
+                Usuń
+              </DropdownMenuItem>
+            </>
+          )
+        case 'ready':
+          if (isReadyAndShopping) {
+            // Ready & shopping actions
+            return (
+              <>
+                <DropdownMenuItem onClick={() => onStartShopping(list._id)}>
+                  <ShoppingCart className="h-4 w-4" />
+                  Kupuj
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={openFinishDialog}>
+                  <CheckCircle className="h-4 w-4" />
+                  Oznacz jako ukończoną
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(list)}>
+                  <Edit className="h-4 w-4" />
+                  Edytuj
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={openDialog} variant="destructive">
+                  <Trash2 className="h-4 w-4" />
+                  Usuń
+                </DropdownMenuItem>
+              </>
+            )
+          } else {
+            // Ready (not shopping) actions
+            return (
+              <>
+                <DropdownMenuItem onClick={() => onStartShopping(list._id)}>
+                  <ShoppingCart className="h-4 w-4" />
+                  Kupuj
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onMarkDraft(list._id)}>
+                  <ClipboardList className="h-4 w-4" />
+                  Oznacz jako szkic
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(list)}>
+                  <Edit className="h-4 w-4" />
+                  Edytuj
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={openDialog} variant="destructive">
+                  <Trash2 className="h-4 w-4" />
+                  Usuń
+                </DropdownMenuItem>
+              </>
+            )
+          }
+        case 'completed':
+          return (
+            <DropdownMenuItem onClick={openDialog} variant="destructive">
+              <Trash2 className="h-4 w-4" />
+              Usuń
+            </DropdownMenuItem>
+          )
+        default:
+          return null
+      }
+    }
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {getDropdownItems()}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
   return (
     <div>
       <Card className="hover:shadow-md transition-shadow">
@@ -139,51 +243,12 @@ function ShoppingListCard({
                 {new Date(list.createdAt).toLocaleDateString('pl-PL')}
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => onEdit(list)}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edytuj
-              </Button>
-              <Button variant="outline" size="sm" onClick={openDialog}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Usuń
-              </Button>
-            </div>
+            {renderActions()}
           </div>
 
-          {list.status === 'draft' && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onMarkReady(list._id)}
-              className="mt-2"
-            >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Oznacz jako gotową
-            </Button>
-          )}
-
-          {list.status === 'ready' && (
-            <div className="flex gap-2 mt-2">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => onStartShopping(list._id)}
-                className="flex-1"
-              >
-                <ShoppingCart />
-                Kupuj
-              </Button>
-              {currentListId === list._id && (
-                <Button variant="outline" size="sm" onClick={openFinishDialog}>
-                  <CheckCircle />
-                  Zakończ
-                </Button>
-              )}
-            </div>
-          )}
-          <div className="mt-3 text-sm text-muted-foreground">
-            Produkty: {list.items.length}
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <ClipboardList className="h-4 w-4" />
+            {list.items.length}
           </div>
         </CardHeader>
 
@@ -263,6 +328,17 @@ export function ShoppingList() {
     navigate({ to: '/shopping' })
   }
 
+  const handleMarkDraft = async (listId: Id<'lists'>) => {
+    try {
+      await updateShoppingList({
+        id: listId,
+        status: 'draft',
+      })
+    } catch (error) {
+      console.error('Błąd podczas zmiany statusu:', error)
+    }
+  }
+
   const handleFinishShopping = async (listId: Id<'lists'>) => {
     try {
       await updateShoppingList({ id: listId, status: 'completed' })
@@ -300,6 +376,7 @@ export function ShoppingList() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onMarkReady={handleMarkReady}
+            onMarkDraft={handleMarkDraft}
             onStartShopping={handleStartShopping}
             onFinishShopping={handleFinishShopping}
           />
