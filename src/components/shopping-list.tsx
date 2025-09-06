@@ -133,7 +133,7 @@ function ShoppingListCard({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <CardAction>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="icon">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </CardAction>
@@ -165,7 +165,7 @@ function ShoppingListCard({
           </CardTitle>
           <CardDescription>
             <div className="flex gap-4 items-center">
-              <Tooltip>
+              <Tooltip delayDuration={300}>
                 <TooltipTrigger>
                   <div className="flex items-center gap-1">
                     <ClipboardList className="h-4 w-4" />
@@ -174,7 +174,7 @@ function ShoppingListCard({
                 </TooltipTrigger>
                 <TooltipContent>Liczba produktów</TooltipContent>
               </Tooltip>
-              <Tooltip>
+              <Tooltip delayDuration={300}>
                 <TooltipTrigger>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
