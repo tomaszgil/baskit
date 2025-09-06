@@ -17,11 +17,11 @@ const getStatusLabel = (status: Type) => {
 const getStatusColor = (status: Type) => {
   switch (status) {
     case 'meal':
-      return 'bg-orange-100 text-orange-800'
+      return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100'
     case 'set':
-      return 'bg-purple-100 text-purple-800'
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100'
   }
 }
 
