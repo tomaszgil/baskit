@@ -5,11 +5,10 @@ import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
-import { Badge } from './ui/badge'
+import { StatusBadge } from './status-badge'
 import {
   Card,
   CardAction,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -76,32 +75,6 @@ function ShoppingListCard({
       actionLabel: 'Usuń',
     },
   )
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return 'Szkic'
-      case 'ready':
-        return 'Gotowa'
-      case 'completed':
-        return 'Ukończona'
-      default:
-        return status
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'ready':
-        return 'bg-green-100 text-green-800'
-      case 'completed':
-        return 'bg-blue-100 text-blue-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const renderActions = () => {
     const getDropdownItems = () => {
@@ -188,9 +161,7 @@ function ShoppingListCard({
               </Link>
             )}
             {list.status === 'completed' && list.name}
-            <Badge className={getStatusColor(list.status)}>
-              {getStatusLabel(list.status)}
-            </Badge>
+            <StatusBadge status={list.status} />
           </CardTitle>
           <CardDescription>
             <div className="flex gap-4 items-center">

@@ -5,7 +5,7 @@ import type { Id } from '~/convex/_generated/dataModel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { useConfirmDialog } from '@/components/confirm-dialog'
 import { ArrowLeft, Square } from 'lucide-react'
 import { toast } from 'sonner'
@@ -24,32 +24,6 @@ function getUnitLabel(unit: string) {
       return 'szt.'
     default:
       return unit
-  }
-}
-
-function getStatusLabel(status: string) {
-  switch (status) {
-    case 'draft':
-      return 'Szkic'
-    case 'ready':
-      return 'Gotowa'
-    case 'completed':
-      return 'Ukończona'
-    default:
-      return status
-  }
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'draft':
-      return 'bg-yellow-100 text-yellow-800'
-    case 'ready':
-      return 'bg-green-100 text-green-800'
-    case 'completed':
-      return 'bg-blue-100 text-blue-800'
-    default:
-      return 'bg-gray-100 text-gray-800'
   }
 }
 
@@ -127,9 +101,7 @@ function ShoppingPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             {current.name}
-            <Badge className={getStatusColor(current.status)}>
-              {getStatusLabel(current.status)}
-            </Badge>
+            <StatusBadge status={current.status} />
           </CardTitle>
           <div className="mt-3">
             <div className="flex justify-between text-sm text-muted-foreground mb-1">
