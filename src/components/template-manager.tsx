@@ -5,7 +5,6 @@ import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
-import { StatusBadge } from './status-badge'
 import {
   Card,
   CardAction,
@@ -31,12 +30,13 @@ import {
 } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { TemplateTypeBadge } from './template-type-badge'
 
 interface Template {
   _id: Id<'templates'>
   name: string
   description: string
-  type: 'meal' | 'template'
+  type: 'meal' | 'set'
   products: Array<{
     productId: Id<'products'>
     quantity: number
@@ -93,7 +93,7 @@ function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {template.name}
-            <StatusBadge status={template.type} />
+            <TemplateTypeBadge status={template.type} />
           </CardTitle>
           <CardDescription className="flex flex-col gap-2">
             {template.description}

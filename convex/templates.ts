@@ -6,7 +6,7 @@ export const createTemplate = mutation({
   args: {
     name: v.string(),
     description: v.string(),
-    type: v.union(v.literal('meal'), v.literal('template')),
+    type: v.union(v.literal('meal'), v.literal('set')),
     products: v.array(
       v.object({
         productId: v.id('products'),
@@ -34,7 +34,7 @@ export const updateTemplate = mutation({
     id: v.id('templates'),
     name: v.string(),
     description: v.string(),
-    type: v.union(v.literal('meal'), v.literal('template')),
+    type: v.union(v.literal('meal'), v.literal('set')),
     products: v.array(
       v.object({
         productId: v.id('products'),

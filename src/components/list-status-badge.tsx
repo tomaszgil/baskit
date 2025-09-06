@@ -1,7 +1,7 @@
 import { Badge } from './ui/badge'
 import { cn } from '@/lib/utils'
 
-type Status = 'draft' | 'ready' | 'completed' | 'meal' | 'template'
+type Status = 'draft' | 'ready' | 'completed'
 
 const getStatusLabel = (status: Status) => {
   switch (status) {
@@ -11,10 +11,6 @@ const getStatusLabel = (status: Status) => {
       return 'Gotowa'
     case 'completed':
       return 'Ukończona'
-    case 'meal':
-      return 'Posiłek'
-    case 'template':
-      return 'Szablon'
     default:
       return status
   }
@@ -28,21 +24,17 @@ const getStatusColor = (status: Status) => {
       return 'bg-green-100 text-green-800'
     case 'completed':
       return 'bg-blue-100 text-blue-800'
-    case 'meal':
-      return 'bg-orange-100 text-orange-800'
-    case 'template':
-      return 'bg-purple-100 text-purple-800'
     default:
       return 'bg-gray-100 text-gray-800'
   }
 }
 
-interface StatusBadgeProps {
+interface ListStatusBadgeProps {
   status: Status
   className?: string
 }
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function ListStatusBadge({ status, className }: ListStatusBadgeProps) {
   return (
     <Badge className={cn(getStatusColor(status), className)}>
       {getStatusLabel(status)}

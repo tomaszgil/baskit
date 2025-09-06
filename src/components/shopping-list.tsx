@@ -5,7 +5,7 @@ import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
-import { StatusBadge } from './status-badge'
+import { ListStatusBadge } from './list-status-badge'
 import {
   Card,
   CardAction,
@@ -161,7 +161,7 @@ function ShoppingListCard({
               </Link>
             )}
             {list.status === 'completed' && list.name}
-            <StatusBadge status={list.status} />
+            <ListStatusBadge status={list.status} />
           </CardTitle>
           <CardDescription>
             <div className="flex gap-4 items-center">

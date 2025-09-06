@@ -5,7 +5,6 @@ import type { Id } from '~/convex/_generated/dataModel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { StatusBadge } from '@/components/status-badge'
 import { useConfirmDialog } from '@/components/confirm-dialog'
 import { ArrowLeft, Square } from 'lucide-react'
 import { toast } from 'sonner'
@@ -101,7 +100,6 @@ function ShoppingPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             {current.name}
-            <StatusBadge status={current.status} />
           </CardTitle>
           <div className="mt-3">
             <div className="flex justify-between text-sm text-muted-foreground mb-1">

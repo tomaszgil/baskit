@@ -31,7 +31,7 @@ import { toast } from 'sonner'
 interface TemplateFormData {
   name: string
   description: string
-  type: 'meal' | 'template'
+  type: 'meal' | 'set'
   products: Array<{
     productId: string
     quantity: number
@@ -230,7 +230,7 @@ function EditTemplate() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="meal">Posiłek</SelectItem>
-                        <SelectItem value="template">Szablon</SelectItem>
+                        <SelectItem value="set">Zestaw</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

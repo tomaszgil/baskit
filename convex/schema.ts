@@ -14,7 +14,7 @@ export default defineSchema({
     userId: v.id('users'),
     name: v.string(),
     description: v.string(),
-    type: v.union(v.literal('meal'), v.literal('template')),
+    type: v.union(v.literal('meal'), v.literal('set')),
     products: v.array(
       v.object({
         productId: v.id('products'),
