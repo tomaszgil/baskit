@@ -65,17 +65,17 @@ export function NavProfile() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <BadgeCheck />
-            Account
+            Konto
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Settings2 />
-            Preferences
+            Preferencje
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => void signOut()}>
           <LogOut />
-          Log out
+          Wyloguj
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

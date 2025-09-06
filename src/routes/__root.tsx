@@ -33,6 +33,7 @@ function RootComponent() {
         {isLoginRoute ? <Outlet /> : <Navigate to="/login" replace />}
       </Unauthenticated>
       <Authenticated>
+        {isLoginRoute ? <Navigate to="/" replace /> : null}
         {isCreateRoute || isEditRoute ? (
           <Outlet />
         ) : (

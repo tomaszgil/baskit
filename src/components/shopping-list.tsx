@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { FAB } from './ui/fab'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { EmptyState } from './ui/empty-state'
+import { Skeleton } from './ui/skeleton'
 import { useShoppingStore } from '@/components/shopping-store'
 import {
   Edit,
@@ -200,9 +201,43 @@ export function ShoppingList() {
   const navigate = useNavigate()
   const { currentListId, startShopping, stopShopping } = useShoppingStore()
 
-  const lists = useQuery(api.lists.getLists) || []
+  const lists = useQuery(api.lists.getLists)
   const updateShoppingList = useMutation(api.lists.updateList)
   const deleteShoppingList = useMutation(api.lists.deleteList)
+
+  // Show skeleton loading state when query returns undefined
+  if (lists === undefined) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index} className="hover:shadow-md transition-shadow">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-6 w-48" />
+                      <Skeleton className="h-6 w-16" />
+                    </div>
+                    <Skeleton className="h-4 w-32 mt-2" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 w-16" />
+                    <Skeleton className="h-8 w-16" />
+                  </div>
+                </div>
+                <Skeleton className="h-8 w-40 mt-2" />
+                <Skeleton className="h-4 w-20 mt-3" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   const handleEdit = (list: ShoppingList) => {
     navigate({ to: '/lists/$listId', params: { listId: list._id } })

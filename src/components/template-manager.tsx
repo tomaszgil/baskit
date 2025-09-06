@@ -8,6 +8,7 @@ import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { FAB } from './ui/fab'
 import { EmptyState } from './ui/empty-state'
+import { Skeleton } from './ui/skeleton'
 import { Trash2, Edit, ClipboardList } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
 
@@ -103,17 +104,6 @@ function TemplateCard({
                 {template.products.length}
               </span>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {template.products.map((item, index) => {
-                const product = products.find((p) => p._id === item.productId)
-                return product ? (
-                  <div key={index}>
-                    {product.name} - {item.quantity}{' '}
-                    {getUnitLabel(product.unit)}
-                  </div>
-                ) : null
-              })}
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -125,9 +115,47 @@ function TemplateCard({
 export function TemplateManager() {
   const navigate = useNavigate()
 
-  const templates = useQuery(api.templates.getTemplates) || []
-  const products = useQuery(api.products.getProducts) || []
+  const templates = useQuery(api.templates.getTemplates)
   const deleteTemplate = useMutation(api.templates.deleteTemplate)
+
+  // Show skeleton loading state when query returns undefined
+  if (templates === undefined) {
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4 grid-cols-1">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <Skeleton className="h-6 w-48 mb-2" />
+                    <Skeleton className="h-4 w-64" />
+                  </div>
+                  <div className="flex gap-1">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   const handleEdit = (templateId: Id<'templates'>) => {
     navigate({ to: `/templates/${templateId}` })
@@ -159,7 +187,6 @@ export function TemplateManager() {
           <TemplateCard
             key={template._id}
             template={template}
-            products={products}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

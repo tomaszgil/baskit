@@ -137,7 +137,6 @@ function ShoppingPage() {
   const checkedItems = current.items.filter((i) => i.checked).length
   const totalItems = current.items.length
   const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0
-  const allItemsChecked = checkedItems === totalItems
 
   return (
     <div className="space-y-4">
