@@ -1,16 +1,16 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '~/convex/_generated/api'
+import type { Id } from '~/convex/_generated/dataModel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import { useShoppingStore } from '@/components/shopping-store'
 import { useConfirmDialog } from '@/components/confirm-dialog'
-import { ArrowLeft, Square, ShoppingCart, Plus, List } from 'lucide-react'
+import { ArrowLeft, Square } from 'lucide-react'
 import { toast } from 'sonner'
 
-export const Route = createFileRoute('/shopping')({
+export const Route = createFileRoute('/lists/$listId/shop')({
   component: ShoppingPage,
 })
 
@@ -55,21 +55,20 @@ function getStatusColor(status: string) {
 
 function ShoppingPage() {
   const navigate = useNavigate()
-  const { currentListId, stopShopping } = useShoppingStore()
+  const { listId } = Route.useParams()
 
-  const lists = useQuery(api.lists.getLists) || []
   const products = useQuery(api.products.getProducts) || []
   const setItemChecked = useMutation(api.lists.setItemChecked)
   const updateList = useMutation(api.lists.updateList)
-
-  const current = lists.find((l) => l._id === currentListId) || null
+  const current = useQuery(api.lists.getListById, {
+    id: listId as Id<'lists'>,
+  })
 
   const handleFinishShopping = async () => {
     if (!current) return
 
     try {
       await updateList({ id: current._id, status: 'completed' })
-      stopShopping()
       navigate({ to: '/lists' })
       toast.success('Lista zakupów została ukończona!')
     } catch (error) {
@@ -93,43 +92,14 @@ function ShoppingPage() {
     actionLabel: 'Ukończ',
   })
 
-  // Empty state when no active list
-  if (!currentListId || !current) {
+  // Show loading state while data is being fetched
+  if (!current) {
     return (
-      <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShoppingCart />
-              Brak aktywnej listy zakupów
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <p className="text-muted-foreground text-sm">
-                Nie masz obecnie aktywnej listy zakupów. Utwórz nową listę lub
-                wybierz istniejącą.
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => navigate({ to: '/lists/create' as any })}
-                  className="flex-1"
-                >
-                  <Plus />
-                  Utwórz nową listę
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate({ to: '/lists' as any })}
-                >
-                  <List />
-                  Wszystkie listy
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        {ConfirmDialog}
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Ładowanie...</p>
+        </div>
       </div>
     )
   }
@@ -142,9 +112,9 @@ function ShoppingPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Button asChild variant="ghost" size="sm">
-          <Link to="/">
+          <Link to="/lists">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Strona główna
+            Wszystkie listy
           </Link>
         </Button>
         <Button variant="outline" size="sm" onClick={openDialog}>

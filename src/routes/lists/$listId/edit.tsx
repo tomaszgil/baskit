@@ -39,7 +39,7 @@ interface EditListFormData {
   items: ListItem[]
 }
 
-export const Route = createFileRoute('/lists/$listId')({
+export const Route = createFileRoute('/lists/$listId/edit')({
   component: EditList,
 })
 

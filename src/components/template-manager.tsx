@@ -22,25 +22,13 @@ interface Template {
   }>
 }
 
-interface Product {
-  _id: Id<'products'>
-  name: string
-  unit: string
-}
-
 interface TemplateCardProps {
   template: Template
-  products: Product[]
   onEdit: (templateId: Id<'templates'>) => void
   onDelete: (templateId: Id<'templates'>) => Promise<void>
 }
 
-function TemplateCard({
-  template,
-  products,
-  onEdit,
-  onDelete,
-}: TemplateCardProps) {
+function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) {
   const { openDialog, ConfirmDialog } = useConfirmDialog(
     async () => {
       await onDelete(template._id)
@@ -51,19 +39,6 @@ function TemplateCard({
       actionLabel: 'Usuń',
     },
   )
-
-  const getUnitLabel = (unit: string) => {
-    switch (unit) {
-      case 'ml':
-        return 'ml'
-      case 'g':
-        return 'g'
-      case 'piece':
-        return 'szt.'
-      default:
-        return unit
-    }
-  }
 
   return (
     <div>

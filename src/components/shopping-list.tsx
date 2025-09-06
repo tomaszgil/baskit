@@ -1,14 +1,20 @@
 import { useQuery, useMutation } from 'convex/react'
-import { useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
 
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card'
 import { FAB } from './ui/fab'
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { EmptyState } from './ui/empty-state'
 import { Skeleton } from './ui/skeleton'
 import {
@@ -17,7 +23,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { useShoppingStore } from '@/components/shopping-store'
 import {
   Edit,
   Trash2,
@@ -27,7 +32,6 @@ import {
   MoreHorizontal,
 } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
-import { toast } from 'sonner'
 
 interface ShoppingList {
   _id: Id<'lists'>
@@ -45,24 +49,20 @@ interface ShoppingList {
 
 interface ShoppingListCardProps {
   list: ShoppingList
-  currentListId: Id<'lists'> | null
   onEdit: (list: ShoppingList) => void
   onDelete: (listId: Id<'lists'>) => Promise<void>
   onMarkReady: (listId: Id<'lists'>) => Promise<void>
   onMarkDraft: (listId: Id<'lists'>) => Promise<void>
   onStartShopping: (listId: Id<'lists'>) => void
-  onFinishShopping: (listId: Id<'lists'>) => Promise<void>
 }
 
 function ShoppingListCard({
   list,
-  currentListId,
   onEdit,
   onDelete,
   onMarkReady,
   onMarkDraft,
   onStartShopping,
-  onFinishShopping,
 }: ShoppingListCardProps) {
   const { openDialog, ConfirmDialog } = useConfirmDialog(
     async () => {
@@ -74,23 +74,6 @@ function ShoppingListCard({
       actionLabel: 'Usuń',
     },
   )
-
-  const checkedItems = list.items.filter((i) => i.checked).length
-  const allItemsChecked = checkedItems === list.items.length
-
-  const { openDialog: openFinishDialog, ConfirmDialog: FinishConfirmDialog } =
-    useConfirmDialog(
-      async () => {
-        await onFinishShopping(list._id)
-      },
-      {
-        title: 'Ukończ listę zakupów',
-        description: allItemsChecked
-          ? 'Czy na pewno chcesz ukończyć tę listę zakupów?'
-          : `Nie wszystkie produkty zostały zaznaczone (${checkedItems}/${list.items.length}). Czy na pewno chcesz ukończyć listę zakupów?`,
-        actionLabel: 'Ukończ',
-      },
-    )
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -119,9 +102,6 @@ function ShoppingListCard({
   }
 
   const renderActions = () => {
-    const isCurrentlyShopping = currentListId === list._id
-    const isReadyAndShopping = list.status === 'ready' && isCurrentlyShopping
-
     const getDropdownItems = () => {
       switch (list.status) {
         case 'draft':
@@ -142,51 +122,26 @@ function ShoppingListCard({
             </>
           )
         case 'ready':
-          if (isReadyAndShopping) {
-            // Ready & shopping actions
-            return (
-              <>
-                <DropdownMenuItem onClick={() => onStartShopping(list._id)}>
-                  <ShoppingCart className="h-4 w-4" />
-                  Kupuj
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={openFinishDialog}>
-                  <CheckCircle className="h-4 w-4" />
-                  Oznacz jako ukończoną
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEdit(list)}>
-                  <Edit className="h-4 w-4" />
-                  Edytuj
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={openDialog} variant="destructive">
-                  <Trash2 className="h-4 w-4" />
-                  Usuń
-                </DropdownMenuItem>
-              </>
-            )
-          } else {
-            // Ready (not shopping) actions
-            return (
-              <>
-                <DropdownMenuItem onClick={() => onStartShopping(list._id)}>
-                  <ShoppingCart className="h-4 w-4" />
-                  Kupuj
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onMarkDraft(list._id)}>
-                  <ClipboardList className="h-4 w-4" />
-                  Oznacz jako szkic
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEdit(list)}>
-                  <Edit className="h-4 w-4" />
-                  Edytuj
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={openDialog} variant="destructive">
-                  <Trash2 className="h-4 w-4" />
-                  Usuń
-                </DropdownMenuItem>
-              </>
-            )
-          }
+          return (
+            <>
+              <DropdownMenuItem onClick={() => onStartShopping(list._id)}>
+                <ShoppingCart className="h-4 w-4" />
+                Kupuj
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onMarkDraft(list._id)}>
+                <ClipboardList className="h-4 w-4" />
+                Oznacz jako szkic
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(list)}>
+                <Edit className="h-4 w-4" />
+                Edytuj
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={openDialog} variant="destructive">
+                <Trash2 className="h-4 w-4" />
+                Usuń
+              </DropdownMenuItem>
+            </>
+          )
         case 'completed':
           return (
             <DropdownMenuItem onClick={openDialog} variant="destructive">
@@ -202,9 +157,11 @@ function ShoppingListCard({
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          <CardAction>
+            <Button variant="ghost" size="sm">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </CardAction>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {getDropdownItems()}
@@ -215,56 +172,46 @@ function ShoppingListCard({
 
   return (
     <div>
-      <Card className="hover:shadow-md transition-shadow">
+      <Card>
         <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex-1">
-              <CardTitle className="flex items-center gap-3">
-                <span className="flex items-center gap-2">
-                  {list.name}
-                  {currentListId === list._id && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="relative inline-flex h-2.5 w-2.5">
-                          <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
-                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>W trakcie</TooltipContent>
-                    </Tooltip>
-                  )}
-                </span>
-                <Badge className={getStatusColor(list.status)}>
-                  {getStatusLabel(list.status)}
-                </Badge>
-              </CardTitle>
-              <div className="text-sm text-muted-foreground mt-1">
-                Utworzono:{' '}
-                {new Date(list.createdAt).toLocaleDateString('pl-PL')}
-              </div>
+          <CardTitle>
+            {list.status === 'draft' && (
+              <Link to={`/lists/$listId/edit`} params={{ listId: list._id }}>
+                {list.name}
+              </Link>
+            )}
+            {list.status === 'ready' && (
+              <Link to={`/lists/$listId/shop`} params={{ listId: list._id }}>
+                {list.name}
+              </Link>
+            )}
+            {list.status === 'completed' && list.name}
+          </CardTitle>
+          <CardDescription>
+            <Badge className={getStatusColor(list.status)}>
+              {getStatusLabel(list.status)}
+            </Badge>
+          </CardDescription>
+          {renderActions()}
+
+          <CardContent>
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <ClipboardList className="h-4 w-4" />
+              {list.items.length}
             </div>
-            {renderActions()}
-          </div>
-
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <ClipboardList className="h-4 w-4" />
-            {list.items.length}
-          </div>
+            <div className="text-sm text-muted-foreground mt-1">
+              Utworzono: {new Date(list.createdAt).toLocaleDateString('pl-PL')}
+            </div>
+          </CardContent>
         </CardHeader>
-
-        <CardContent>
-          {/* W trybie listy nie pokazujemy szczegółów */}
-        </CardContent>
       </Card>
       {ConfirmDialog}
-      {FinishConfirmDialog}
     </div>
   )
 }
 
 export function ShoppingList() {
   const navigate = useNavigate()
-  const { currentListId, startShopping, stopShopping } = useShoppingStore()
 
   const lists = useQuery(api.lists.getLists)
   const updateShoppingList = useMutation(api.lists.updateList)
@@ -305,7 +252,7 @@ export function ShoppingList() {
   }
 
   const handleEdit = (list: ShoppingList) => {
-    navigate({ to: '/lists/$listId', params: { listId: list._id } })
+    navigate({ to: '/lists/$listId/edit', params: { listId: list._id } })
   }
 
   const handleDelete = async (listId: Id<'lists'>) => {
@@ -324,8 +271,7 @@ export function ShoppingList() {
   }
 
   const handleStartShopping = (listId: Id<'lists'>) => {
-    startShopping(listId)
-    navigate({ to: '/shopping' })
+    navigate({ to: '/lists/$listId/shop', params: { listId } })
   }
 
   const handleMarkDraft = async (listId: Id<'lists'>) => {
@@ -336,17 +282,6 @@ export function ShoppingList() {
       })
     } catch (error) {
       console.error('Błąd podczas zmiany statusu:', error)
-    }
-  }
-
-  const handleFinishShopping = async (listId: Id<'lists'>) => {
-    try {
-      await updateShoppingList({ id: listId, status: 'completed' })
-      stopShopping()
-      toast.success('Lista zakupów została ukończona!')
-    } catch (error) {
-      console.error('Błąd podczas ukończenia listy:', error)
-      toast.error('Wystąpił błąd podczas ukończenia listy')
     }
   }
 
@@ -372,13 +307,11 @@ export function ShoppingList() {
           <ShoppingListCard
             key={list._id}
             list={list}
-            currentListId={currentListId}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onMarkReady={handleMarkReady}
             onMarkDraft={handleMarkDraft}
             onStartShopping={handleStartShopping}
-            onFinishShopping={handleFinishShopping}
           />
         ))}
       </div>

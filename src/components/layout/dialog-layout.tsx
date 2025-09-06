@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useCanGoBack, useRouter } from '@tanstack/react-router'
 import { Button } from '../ui/button'
 import { ArrowLeft } from 'lucide-react'
 
@@ -10,8 +10,8 @@ interface DialogLayoutProps {
 }
 
 export function DialogLayout({ title, children, actions }: DialogLayoutProps) {
-  const navigate = useNavigate()
-
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
   return (
     <div className="h-[100dvh] flex flex-col bg-background">
       {/* Header */}
@@ -20,7 +20,8 @@ export function DialogLayout({ title, children, actions }: DialogLayoutProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate({ to: '..' })}
+            disabled={!canGoBack}
+            onClick={() => router.history.back()}
           >
             <ArrowLeft />
           </Button>

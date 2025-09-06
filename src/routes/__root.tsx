@@ -18,9 +18,6 @@ function RootComponent() {
   const isCreateRoute =
     location.pathname === '/lists/create' ||
     location.pathname === '/templates/create'
-  const isEditRoute =
-    location.pathname.startsWith('/templates/') ||
-    location.pathname.startsWith('/lists/')
   const isLoginRoute = location.pathname === '/login'
 
   return (
@@ -34,7 +31,7 @@ function RootComponent() {
       </Unauthenticated>
       <Authenticated>
         {isLoginRoute ? <Navigate to="/" replace /> : null}
-        {isCreateRoute || isEditRoute ? (
+        {isCreateRoute ? (
           <Outlet />
         ) : (
           <MainLayout>

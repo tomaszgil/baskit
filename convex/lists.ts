@@ -110,16 +110,31 @@ export const setItemChecked = mutation({
   },
 })
 
+const statusOrder: Record<'ready' | 'draft' | 'completed', number> = {
+  ready: 0,
+  draft: 1,
+  completed: 2,
+}
+
 export const getLists = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx)
     if (!userId) throw new Error('User not found')
 
-    return await ctx.db
+    const lists = await ctx.db
       .query('lists')
       .withIndex('by_user', (q) => q.eq('userId', userId))
       .collect()
+
+    return lists.sort((a, b) => {
+      const statusA = statusOrder[a.status]
+      const statusB = statusOrder[b.status]
+      if (statusA !== statusB) {
+        return statusA - statusB
+      }
+      return b.updatedAt - a.updatedAt
+    })
   },
 })
 

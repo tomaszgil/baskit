@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ShoppingRouteImport } from './routes/shopping'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TemplatesIndexRouteImport } from './routes/templates/index'
@@ -17,13 +16,9 @@ import { Route as ListsIndexRouteImport } from './routes/lists/index'
 import { Route as TemplatesCreateRouteImport } from './routes/templates/create'
 import { Route as TemplatesTemplateIdRouteImport } from './routes/templates/$templateId'
 import { Route as ListsCreateRouteImport } from './routes/lists/create'
-import { Route as ListsListIdRouteImport } from './routes/lists/$listId'
+import { Route as ListsListIdShopRouteImport } from './routes/lists/$listId/shop'
+import { Route as ListsListIdEditRouteImport } from './routes/lists/$listId/edit'
 
-const ShoppingRoute = ShoppingRouteImport.update({
-  id: '/shopping',
-  path: '/shopping',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -59,103 +54,101 @@ const ListsCreateRoute = ListsCreateRouteImport.update({
   path: '/lists/create',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ListsListIdRoute = ListsListIdRouteImport.update({
-  id: '/lists/$listId',
-  path: '/lists/$listId',
+const ListsListIdShopRoute = ListsListIdShopRouteImport.update({
+  id: '/lists/$listId/shop',
+  path: '/lists/$listId/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListsListIdEditRoute = ListsListIdEditRouteImport.update({
+  id: '/lists/$listId/edit',
+  path: '/lists/$listId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/shopping': typeof ShoppingRoute
-  '/lists/$listId': typeof ListsListIdRoute
   '/lists/create': typeof ListsCreateRoute
   '/templates/$templateId': typeof TemplatesTemplateIdRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists': typeof ListsIndexRoute
   '/templates': typeof TemplatesIndexRoute
+  '/lists/$listId/edit': typeof ListsListIdEditRoute
+  '/lists/$listId/shop': typeof ListsListIdShopRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/shopping': typeof ShoppingRoute
-  '/lists/$listId': typeof ListsListIdRoute
   '/lists/create': typeof ListsCreateRoute
   '/templates/$templateId': typeof TemplatesTemplateIdRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists': typeof ListsIndexRoute
   '/templates': typeof TemplatesIndexRoute
+  '/lists/$listId/edit': typeof ListsListIdEditRoute
+  '/lists/$listId/shop': typeof ListsListIdShopRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/shopping': typeof ShoppingRoute
-  '/lists/$listId': typeof ListsListIdRoute
   '/lists/create': typeof ListsCreateRoute
   '/templates/$templateId': typeof TemplatesTemplateIdRoute
   '/templates/create': typeof TemplatesCreateRoute
   '/lists/': typeof ListsIndexRoute
   '/templates/': typeof TemplatesIndexRoute
+  '/lists/$listId/edit': typeof ListsListIdEditRoute
+  '/lists/$listId/shop': typeof ListsListIdShopRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/login'
-    | '/shopping'
-    | '/lists/$listId'
     | '/lists/create'
     | '/templates/$templateId'
     | '/templates/create'
     | '/lists'
     | '/templates'
+    | '/lists/$listId/edit'
+    | '/lists/$listId/shop'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
-    | '/shopping'
-    | '/lists/$listId'
     | '/lists/create'
     | '/templates/$templateId'
     | '/templates/create'
     | '/lists'
     | '/templates'
+    | '/lists/$listId/edit'
+    | '/lists/$listId/shop'
   id:
     | '__root__'
     | '/'
     | '/login'
-    | '/shopping'
-    | '/lists/$listId'
     | '/lists/create'
     | '/templates/$templateId'
     | '/templates/create'
     | '/lists/'
     | '/templates/'
+    | '/lists/$listId/edit'
+    | '/lists/$listId/shop'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  ShoppingRoute: typeof ShoppingRoute
-  ListsListIdRoute: typeof ListsListIdRoute
   ListsCreateRoute: typeof ListsCreateRoute
   TemplatesTemplateIdRoute: typeof TemplatesTemplateIdRoute
   TemplatesCreateRoute: typeof TemplatesCreateRoute
   ListsIndexRoute: typeof ListsIndexRoute
   TemplatesIndexRoute: typeof TemplatesIndexRoute
+  ListsListIdEditRoute: typeof ListsListIdEditRoute
+  ListsListIdShopRoute: typeof ListsListIdShopRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/shopping': {
-      id: '/shopping'
-      path: '/shopping'
-      fullPath: '/shopping'
-      preLoaderRoute: typeof ShoppingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -205,11 +198,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lists/$listId': {
-      id: '/lists/$listId'
-      path: '/lists/$listId'
-      fullPath: '/lists/$listId'
-      preLoaderRoute: typeof ListsListIdRouteImport
+    '/lists/$listId/shop': {
+      id: '/lists/$listId/shop'
+      path: '/lists/$listId/shop'
+      fullPath: '/lists/$listId/shop'
+      preLoaderRoute: typeof ListsListIdShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lists/$listId/edit': {
+      id: '/lists/$listId/edit'
+      path: '/lists/$listId/edit'
+      fullPath: '/lists/$listId/edit'
+      preLoaderRoute: typeof ListsListIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -218,13 +218,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  ShoppingRoute: ShoppingRoute,
-  ListsListIdRoute: ListsListIdRoute,
   ListsCreateRoute: ListsCreateRoute,
   TemplatesTemplateIdRoute: TemplatesTemplateIdRoute,
   TemplatesCreateRoute: TemplatesCreateRoute,
   ListsIndexRoute: ListsIndexRoute,
   TemplatesIndexRoute: TemplatesIndexRoute,
+  ListsListIdEditRoute: ListsListIdEditRoute,
+  ListsListIdShopRoute: ListsListIdShopRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
