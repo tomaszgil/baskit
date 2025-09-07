@@ -70,14 +70,40 @@ function CreateList() {
     if (selectedTemplate && name) {
       const template = templates.find((t) => t._id === selectedTemplate)
       if (template) {
-        const items = template.products.map((product) => ({
+        const templateItems = template.products.map((product) => ({
           productId: product.productId,
           quantity: product.quantity * form.getValues('multiplier'),
           notes: '',
         }))
 
-        // Clear existing items and add new ones
-        form.setValue('items', items)
+        // Get existing items
+        const existingItems = form.getValues('items')
+
+        // Create a map to track existing products
+        const existingItemsMap = new Map<string, ListItem>()
+        existingItems.forEach((item) => {
+          if (item.productId) {
+            existingItemsMap.set(item.productId, item)
+          }
+        })
+
+        // Merge template items with existing items
+        const mergedItems = [...existingItems]
+
+        templateItems.forEach((templateItem) => {
+          if (templateItem.productId) {
+            const existingItem = existingItemsMap.get(templateItem.productId)
+            if (existingItem) {
+              // Product exists, add quantities
+              existingItem.quantity += templateItem.quantity
+            } else {
+              // Product doesn't exist, add new item
+              mergedItems.push(templateItem)
+            }
+          }
+        })
+
+        form.setValue('items', mergedItems)
       }
     }
   }
