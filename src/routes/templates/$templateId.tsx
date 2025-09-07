@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { useQuery, useMutation } from 'convex/react'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
@@ -27,17 +27,25 @@ import {
 import { DialogLayout } from '@/components/layout/dialog-layout'
 import { Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
-import { debounce } from '@/lib/debounce'
+import debounce from 'lodash/debounce'
+import { z } from 'zod/v3'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-interface TemplateFormData {
-  name: string
-  description: string
-  type: 'meal' | 'set'
-  products: Array<{
-    productId: string
-    quantity: number
-  }>
-}
+const formSchema = z.object({
+  name: z.string().min(1, 'Nazwa jest wymagana'),
+  description: z.string().min(1, 'Opis jest wymagany'),
+  type: z.enum(['meal', 'set']),
+  products: z
+    .array(
+      z.object({
+        productId: z.string().min(1, 'Produkt jest wymagany'),
+        quantity: z.number().min(1, 'Ilość jest wymagana'),
+      }),
+    )
+    .min(1, 'Dodaj przynajmniej jeden produkt'),
+})
+
+type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute('/templates/$templateId')({
   component: EditTemplate,
@@ -52,16 +60,19 @@ function EditTemplate() {
   })
   const products = useQuery(api.products.getProducts) || []
   const updateTemplate = useMutation(api.templates.updateTemplate)
-  const [status, setStatus] = useState<'saved' | 'saving' | 'error'>('saved')
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [syncStatus, setSyncStatus] = useState<'saved' | 'saving' | 'error'>(
+    'saved',
+  )
 
-  const form = useForm<TemplateFormData>({
+  const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       description: '',
       type: 'meal',
       products: [],
     },
+    values: template ? template : undefined,
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -69,85 +80,47 @@ function EditTemplate() {
     name: 'products',
   })
 
-  // Pre-populate form when template data is loaded
-  useEffect(() => {
-    if (template) {
-      form.reset({
-        name: template.name,
-        description: template.description,
-        type: template.type,
-        products: template.products.map((product) => ({
-          productId: product.productId,
-          quantity: product.quantity,
-        })),
-      })
-      setStatus('saved')
-      setIsInitialized(true)
-    }
-  }, [template, form])
+  const save = useCallback(
+    debounce(() => {
+      form.handleSubmit(async (data) => {
+        console.log('submit fired', data)
+        try {
+          const productsWithValidData = data.products.filter(
+            (product) => product.productId && product.quantity > 0,
+          )
 
-  const saveNow = async (data: TemplateFormData) => {
-    if (!data.name.trim()) {
-      setStatus('saved') // Invalid data, but no need to save
-      return
-    }
-    if (!data.description.trim()) {
-      setStatus('saved') // Invalid data, but no need to save
-      return
-    }
-    if (data.products.length === 0) {
-      setStatus('saved') // Invalid data, but no need to save
-      return
-    }
-
-    try {
-      const productsWithValidData = data.products.filter(
-        (product) => product.productId && product.quantity > 0,
-      )
-      if (productsWithValidData.length === 0) {
-        setStatus('saved') // Invalid data, but no need to save
-        return
-      }
-
-      setStatus('saving')
-      await updateTemplate({
-        id: templateId as Id<'templates'>,
-        name: data.name,
-        description: data.description,
-        type: data.type,
-        products: productsWithValidData.map((product) => ({
-          productId: product.productId as Id<'products'>,
-          quantity: product.quantity,
-        })),
-      })
-      setStatus('saved')
-    } catch (error) {
-      console.error('Błąd podczas aktualizacji szablonu:', error)
-      setStatus('error')
-      toast.error('Wystąpił błąd podczas aktualizacji szablonu')
-    }
-  }
-
-  // Debounced autosave on any form change
-  const debouncedSave = React.useMemo(
-    () =>
-      debounce((...args: unknown[]) => {
-        const data = args[0] as TemplateFormData
-        void saveNow(data)
-      }, 1000),
-    [saveNow],
+          await updateTemplate({
+            id: templateId as Id<'templates'>,
+            name: data.name,
+            description: data.description,
+            type: data.type,
+            products: productsWithValidData.map((product) => ({
+              productId: product.productId as Id<'products'>,
+              quantity: product.quantity,
+            })),
+          })
+          setSyncStatus('saved')
+        } catch (error) {
+          console.error('Błąd podczas aktualizacji szablonu:', error)
+          setSyncStatus('error')
+          toast.error('Wystąpił błąd podczas aktualizacji szablonu')
+        }
+      })()
+    }, 2000),
+    [form.handleSubmit],
   )
 
   useEffect(() => {
-    if (!isInitialized) return
-
     const subscription = form.watch(() => {
-      setStatus('saving')
-      const current = form.getValues()
-      debouncedSave(current)
+      if (form.formState.isDirty && syncStatus !== 'saving') {
+        console.log('form is dirty, saving')
+        setSyncStatus('saving')
+        save()
+      }
     })
+
     return () => subscription.unsubscribe()
-  }, [form, debouncedSave, isInitialized])
+  }, [form.watch, syncStatus])
 
   const addProductToTemplate = () => {
     append({ productId: '', quantity: 1 })
@@ -196,29 +169,29 @@ function EditTemplate() {
 
   return (
     <DialogLayout
-      title={<span>Edytuj szablon</span>}
+      title="Edytuj szablon"
       headerActions={
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span
             className={
-              status === 'saving'
+              syncStatus === 'saving'
                 ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
-                : status === 'error'
+                : syncStatus === 'error'
                   ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
                   : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
             }
             aria-label={
-              status === 'saving'
+              syncStatus === 'saving'
                 ? 'Zapisywanie'
-                : status === 'error'
+                : syncStatus === 'error'
                   ? 'Błąd zapisu'
                   : 'Zapisano'
             }
           />
           <span>
-            {status === 'saving'
+            {syncStatus === 'saving'
               ? 'Zapisywanie...'
-              : status === 'error'
+              : syncStatus === 'error'
                 ? 'Błąd zapisu'
                 : 'Zapisano'}
           </span>
@@ -280,7 +253,7 @@ function EditTemplate() {
                     <Textarea
                       {...field}
                       placeholder="Opis szablonu..."
-                      className="min-h-[100px] text-lg"
+                      className="min-h-[100px]"
                     />
                   </FormControl>
                   <FormMessage />
