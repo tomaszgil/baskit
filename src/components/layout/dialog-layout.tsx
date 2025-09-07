@@ -23,7 +23,7 @@ export function DialogLayout({
     <div className="h-[100dvh] flex flex-col bg-background">
       {/* Header */}
       <header className="w-full border-b bg-background">
-        <div className="container mx-auto px-4 h-16 flex items-center gap-2 max-w-lg">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-2 max-w-lg">
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"

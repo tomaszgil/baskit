@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from 'convex/react'
-import { useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
@@ -93,7 +93,12 @@ function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {template.name}
+            <Link
+              to={`/templates/$templateId`}
+              params={{ templateId: template._id }}
+            >
+              {template.name}
+            </Link>
             <TemplateTypeBadge status={template.type} />
           </CardTitle>
           <CardDescription className="flex flex-col gap-2">

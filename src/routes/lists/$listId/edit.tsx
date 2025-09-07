@@ -167,34 +167,32 @@ function EditList() {
 
   return (
     <DialogLayout
-      title={
-        <div className="flex items-center gap-3">
-          <span>Edytuj listę zakupów</span>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span
-              className={
-                status === 'saving'
-                  ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
-                  : status === 'error'
-                    ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
-                    : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
-              }
-              aria-label={
-                status === 'saving'
-                  ? 'Zapisywanie'
-                  : status === 'error'
-                    ? 'Błąd zapisu'
-                    : 'Zapisano'
-              }
-            />
-            <span>
-              {status === 'saving'
-                ? 'Zapisywanie...'
+      title={<span>Edytuj</span>}
+      headerActions={
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span
+            className={
+              status === 'saving'
+                ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
+                : status === 'error'
+                  ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
+                  : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
+            }
+            aria-label={
+              status === 'saving'
+                ? 'Zapisywanie'
                 : status === 'error'
                   ? 'Błąd zapisu'
-                  : 'Zapisano'}
-            </span>
-          </div>
+                  : 'Zapisano'
+            }
+          />
+          <span>
+            {status === 'saving'
+              ? 'Zapisywanie...'
+              : status === 'error'
+                ? 'Błąd zapisu'
+                : 'Zapisano'}
+          </span>
         </div>
       }
     >
