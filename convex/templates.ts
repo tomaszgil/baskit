@@ -80,10 +80,12 @@ export const getTemplates = query({
 
     if (!userId) throw new Error('User not found')
 
-    return await ctx.db
+    const templates = await ctx.db
       .query('templates')
       .withIndex('by_user', (q) => q.eq('userId', userId))
       .collect()
+
+    return templates.sort((a, b) => b.updatedAt - a.updatedAt)
   },
 })
 
