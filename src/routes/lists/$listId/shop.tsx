@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useConfirmDialog } from '@/components/confirm-dialog'
-import { ArrowLeft, Square } from 'lucide-react'
+import { Square } from 'lucide-react'
+import { DialogLayout } from '@/components/layout/dialog-layout'
 import { toast } from 'sonner'
 
 export const Route = createFileRoute('/lists/$listId/shop')({
@@ -82,79 +83,80 @@ function ShoppingPage() {
   const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button asChild variant="ghost" size="sm">
-          <Link to="/lists">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Wszystkie listy
-          </Link>
-        </Button>
+    <DialogLayout
+      title={
+        <div className="flex items-center gap-3">
+          <span>Zakupy</span>
+        </div>
+      }
+      headerActions={
         <Button variant="outline" size="sm" onClick={openDialog}>
           <Square className="h-4 w-4 mr-2" />
           Zakończ
         </Button>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            {current.name}
-          </CardTitle>
-          <div className="mt-3">
-            <div className="flex justify-between text-sm text-muted-foreground mb-1">
-              <span>
-                Postęp: {checkedItems}/{totalItems}
-              </span>
-              <span>{Math.round(progress)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-primary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {current.items.map((item, index) => {
-              const product = products.find((p) => p._id === item.productId)
-              if (!product) return null
-              return (
+      }
+    >
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              {current.name}
+            </CardTitle>
+            <div className="mt-3">
+              <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                <span>
+                  Postęp: {checkedItems}/{totalItems}
+                </span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  key={index}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <Checkbox
-                    checked={item.checked}
-                    onCheckedChange={async (checked) => {
-                      await setItemChecked({
-                        listId: current._id,
-                        productId: item.productId,
-                        checked: !!checked,
-                      })
-                    }}
-                    disabled={current.status === 'completed'}
-                  />
-                  <div className="flex-1">
-                    <div
-                      className={`text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}
-                    >
-                      {product.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {item.quantity} {getUnitLabel(product.unit)}
-                      {item.notes && ` • ${item.notes}`}
+                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {current.items.map((item, index) => {
+                const product = products.find((p) => p._id === item.productId)
+                if (!product) return null
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Checkbox
+                      checked={item.checked}
+                      onCheckedChange={async (checked) => {
+                        await setItemChecked({
+                          listId: current._id,
+                          productId: item.productId,
+                          checked: !!checked,
+                        })
+                      }}
+                      disabled={current.status === 'completed'}
+                    />
+                    <div className="flex-1">
+                      <div
+                        className={`text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}
+                      >
+                        {product.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {item.quantity} {getUnitLabel(product.unit)}
+                        {item.notes && ` • ${item.notes}`}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
-      {ConfirmDialog}
-    </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+        {ConfirmDialog}
+      </div>
+    </DialogLayout>
   )
 }

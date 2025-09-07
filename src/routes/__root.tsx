@@ -15,9 +15,10 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const location = useLocation()
-  const isCreateRoute =
-    location.pathname === '/lists/create' ||
-    location.pathname === '/templates/create'
+  const isTopRoute =
+    location.pathname === '/' ||
+    location.pathname === '/lists' ||
+    location.pathname === '/templates'
   const isLoginRoute = location.pathname === '/login'
 
   return (
@@ -31,12 +32,12 @@ function RootComponent() {
       </Unauthenticated>
       <Authenticated>
         {isLoginRoute ? <Navigate to="/" replace /> : null}
-        {isCreateRoute ? (
-          <Outlet />
-        ) : (
+        {isTopRoute ? (
           <MainLayout>
             <Outlet />
           </MainLayout>
+        ) : (
+          <Outlet />
         )}
       </Authenticated>
     </ThemeProvider>

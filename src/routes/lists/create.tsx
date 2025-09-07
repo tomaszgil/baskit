@@ -159,7 +159,7 @@ function CreateList() {
   return (
     <DialogLayout
       title="Nowa lista zakupów"
-      actions={
+      footerActions={
         <div className="flex justify-between items-center py-4">
           <Button variant="outline" onClick={() => navigate({ to: '/lists' })}>
             Anuluj

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ShoppingCart, SquareDashedKanban, Plus } from 'lucide-react'
+import { ShoppingCart, TextSelect, Plus } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -49,7 +49,7 @@ function Index() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <SquareDashedKanban />
+              <TextSelect />
               Szablony
             </CardTitle>
             <CardDescription>

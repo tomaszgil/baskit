@@ -27,7 +27,7 @@ import {
   ClipboardList,
   MoreHorizontal,
   Calendar,
-  SquareDashedKanban,
+  TextSelect,
 } from 'lucide-react'
 import { useConfirmDialog } from './confirm-dialog'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
@@ -181,9 +181,7 @@ export function TemplateManager() {
   if (templates.length === 0) {
     return (
       <EmptyState
-        illustration={
-          <SquareDashedKanban className="h-16 w-16 text-gray-300" />
-        }
+        illustration={<TextSelect className="h-16 w-16 text-gray-300" />}
         title="Brak szablonów"
         description="Utwórz swój pierwszy szablon, aby szybko tworzyć powtarzalne listy zakupów. Szablony pomogą Ci zaoszczędzić czas przy planowaniu posiłków i zakupów."
         action={

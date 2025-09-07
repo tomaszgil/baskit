@@ -197,7 +197,6 @@ function EditList() {
           </div>
         </div>
       }
-      actions={<div />}
     >
       <Form {...form}>
         <form id="edit-list-form" className="space-y-6">

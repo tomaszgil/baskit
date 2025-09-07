@@ -226,7 +226,6 @@ function EditTemplate() {
           </div>
         </div>
       }
-      actions={<div />}
     >
       <Form {...form}>
         <form id="edit-template-form" className="space-y-6">
@@ -299,7 +298,7 @@ function EditTemplate() {
                   variant="outline"
                   onClick={addProductToTemplate}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus />
                   Dodaj produkt
                 </Button>
               </div>

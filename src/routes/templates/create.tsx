@@ -125,7 +125,7 @@ function CreateTemplate() {
   return (
     <DialogLayout
       title="Nowy szablon"
-      actions={
+      footerActions={
         <div className="flex justify-between items-center py-4">
           <Button
             variant="outline"
