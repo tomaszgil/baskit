@@ -272,7 +272,7 @@ export function ShoppingList() {
   if (lists.length === 0) {
     return (
       <EmptyState
-        illustration={<ClipboardList className="h-16 w-16 text-gray-300" />}
+        illustration={<ShoppingCart className="h-16 w-16 text-gray-300" />}
         title="Brak list zakupów"
         description="Utwórz swoją pierwszą listę zakupów, aby rozpocząć organizowanie zakupów. Możesz tworzyć listy od podstaw lub używać gotowych szablonów."
         action={

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
-import { ShoppingCart, FileText, Home } from 'lucide-react'
+import { ShoppingCart, Home, SquareDashedKanban } from 'lucide-react'
 import logo from '@/assets/logo.svg'
 import { ModeToggle } from '../mode-toggle'
 import { NavProfile } from '../auth/nav-profile'
@@ -32,7 +32,7 @@ export function MainLayout({ children }: AppLayoutProps) {
   const navigationItems = [
     { href: '/', icon: Home, label: 'Strona główna' },
     { href: '/lists', icon: ShoppingCart, label: 'Listy' },
-    { href: '/templates', icon: FileText, label: 'Szablony' },
+    { href: '/templates', icon: SquareDashedKanban, label: 'Szablony' },
   ]
 
   return (
