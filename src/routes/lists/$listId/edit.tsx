@@ -1,5 +1,5 @@
 import React from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { useQuery, useMutation } from 'convex/react'
 
@@ -24,8 +24,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DialogLayout } from '@/components/layout/dialog-layout'
-import { Plus, Save, X } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { debounce } from '@/lib/debounce'
 
 interface ListItem {
   productId: Id<'products'> | ''
@@ -44,13 +45,17 @@ export const Route = createFileRoute('/lists/$listId/edit')({
 })
 
 function EditList() {
-  const navigate = useNavigate()
   const { listId } = Route.useParams()
   const products = useQuery(api.products.getProducts) || []
   const shoppingList = useQuery(api.lists.getListById, {
     id: listId as Id<'lists'>,
   })
   const updateShoppingList = useMutation(api.lists.updateList)
+
+  const [status, setStatus] = React.useState<'saved' | 'saving' | 'error'>(
+    'saved',
+  )
+  const [isInitialized, setIsInitialized] = React.useState(false)
 
   const form = useForm<EditListFormData>({
     defaultValues: {
@@ -71,6 +76,8 @@ function EditList() {
         name: shoppingList.name,
         items: shoppingList.items,
       })
+      setStatus('saved')
+      setIsInitialized(true)
     }
   }, [shoppingList, form])
 
@@ -83,45 +90,68 @@ function EditList() {
     })
   }
 
-  const onSubmit = async (data: EditListFormData) => {
-    // Manual validation
-    if (!data.name.trim()) {
-      toast.error('Nazwa listy jest wymagana')
-      return
-    }
-
-    if (data.items.length === 0) {
-      toast.error('Dodaj przynajmniej jeden produkt do listy')
-      return
-    }
-
-    try {
-      // Filter out items with empty productId
-      const validItems = data.items.filter((item) => item.productId !== '')
-
-      if (validItems.length === 0) {
-        toast.error('Wszystkie produkty muszą mieć poprawną nazwę i ilość')
+  const saveNow = React.useCallback(
+    async (data: EditListFormData) => {
+      // Manual validation
+      if (!data.name.trim()) {
+        setStatus('saved') // Invalid data, but no need to save
         return
       }
 
-      await updateShoppingList({
-        id: listId as Id<'lists'>,
-        name: data.name,
-        items: validItems as Array<{
-          productId: Id<'products'>
-          quantity: number
-          notes?: string
-          checked: boolean
-        }>,
-      })
+      if (data.items.length === 0) {
+        setStatus('saved') // Invalid data, but no need to save
+        return
+      }
 
-      toast.success('Lista zakupów została zaktualizowana pomyślnie!')
-      navigate({ to: '/lists' })
-    } catch (error) {
-      console.error('Błąd podczas zapisywania listy:', error)
-      toast.error('Wystąpił błąd podczas aktualizacji listy')
-    }
-  }
+      try {
+        const validItems = data.items.filter((item) => item.productId !== '')
+
+        if (validItems.length === 0) {
+          setStatus('saved') // Invalid data, but no need to save
+          return
+        }
+
+        setStatus('saving')
+        await updateShoppingList({
+          id: listId as Id<'lists'>,
+          name: data.name,
+          items: validItems as Array<{
+            productId: Id<'products'>
+            quantity: number
+            notes?: string
+            checked: boolean
+          }>,
+        })
+        setStatus('saved')
+      } catch (error) {
+        console.error('Błąd podczas zapisywania listy:', error)
+        setStatus('error')
+        toast.error('Wystąpił błąd podczas aktualizacji listy')
+      }
+    },
+    [listId, updateShoppingList],
+  )
+
+  // Debounced autosave on any form change
+  const debouncedSave = React.useMemo(
+    () =>
+      debounce((...args: unknown[]) => {
+        const data = args[0] as EditListFormData
+        void saveNow(data)
+      }, 1000),
+    [saveNow],
+  )
+
+  React.useEffect(() => {
+    if (!isInitialized) return
+
+    const subscription = form.watch(() => {
+      setStatus('saving')
+      const currentValues = form.getValues()
+      debouncedSave(currentValues)
+    })
+    return () => subscription.unsubscribe()
+  }, [form, debouncedSave, isInitialized])
 
   // Show loading state while data is being fetched
   if (!shoppingList) {
@@ -137,25 +167,40 @@ function EditList() {
 
   return (
     <DialogLayout
-      title="Edytuj listę zakupów"
-      actions={
-        <div className="flex justify-between items-center py-4">
-          <Button variant="outline" onClick={() => navigate({ to: '/lists' })}>
-            Anuluj
-          </Button>
-          <Button form="edit-list-form" type="submit" size="lg">
-            <Save className="h-4 w-4 mr-2" />
-            Zapisz zmiany
-          </Button>
+      title={
+        <div className="flex items-center gap-3">
+          <span>Edytuj listę zakupów</span>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span
+              className={
+                status === 'saving'
+                  ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
+                  : status === 'error'
+                    ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
+                    : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
+              }
+              aria-label={
+                status === 'saving'
+                  ? 'Zapisywanie'
+                  : status === 'error'
+                    ? 'Błąd zapisu'
+                    : 'Zapisano'
+              }
+            />
+            <span>
+              {status === 'saving'
+                ? 'Zapisywanie...'
+                : status === 'error'
+                  ? 'Błąd zapisu'
+                  : 'Zapisano'}
+            </span>
+          </div>
         </div>
       }
+      actions={<div />}
     >
       <Form {...form}>
-        <form
-          id="edit-list-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form id="edit-list-form" className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}

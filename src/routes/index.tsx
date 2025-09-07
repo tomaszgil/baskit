@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { ShoppingCart, SquareDashedKanban, Plus } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -17,12 +23,12 @@ function Index() {
               <ShoppingCart />
               Listy zakupów
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm mb-4">
+            <CardDescription>
               Zarządzaj swoimi listami zakupów. Twórz nowe listy, edytuj
               istniejące i śledź postęp zakupów.
-            </p>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="flex gap-2">
               <Button asChild className="flex-1">
                 <Link to="/lists">
@@ -46,11 +52,11 @@ function Index() {
               <SquareDashedKanban />
               Szablony
             </CardTitle>
+            <CardDescription>
+              Używaj gotowych szablonów do szybkiego tworzenia list zakupów.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground text-sm mb-4">
-              Używaj gotowych szablonów do szybkiego tworzenia list zakupów.
-            </p>
             <Button asChild variant="outline" className="w-full">
               <Link to="/templates">Przeglądaj szablony</Link>
             </Button>

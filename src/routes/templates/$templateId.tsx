@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { useQuery, useMutation } from 'convex/react'
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
@@ -25,8 +25,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DialogLayout } from '@/components/layout/dialog-layout'
-import { Plus, Save, X } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { debounce } from '@/lib/debounce'
 
 interface TemplateFormData {
   name: string
@@ -51,6 +52,8 @@ function EditTemplate() {
   })
   const products = useQuery(api.products.getProducts) || []
   const updateTemplate = useMutation(api.templates.updateTemplate)
+  const [status, setStatus] = useState<'saved' | 'saving' | 'error'>('saved')
+  const [isInitialized, setIsInitialized] = useState(false)
 
   const form = useForm<TemplateFormData>({
     defaultValues: {
@@ -78,23 +81,22 @@ function EditTemplate() {
           quantity: product.quantity,
         })),
       })
+      setStatus('saved')
+      setIsInitialized(true)
     }
   }, [template, form])
 
-  const onSubmit = async (data: TemplateFormData) => {
-    // Manual validation
+  const saveNow = async (data: TemplateFormData) => {
     if (!data.name.trim()) {
-      toast.error('Nazwa szablonu jest wymagana')
+      setStatus('saved') // Invalid data, but no need to save
       return
     }
-
     if (!data.description.trim()) {
-      toast.error('Opis szablonu jest wymagany')
+      setStatus('saved') // Invalid data, but no need to save
       return
     }
-
     if (data.products.length === 0) {
-      toast.error('Dodaj przynajmniej jeden produkt do szablonu')
+      setStatus('saved') // Invalid data, but no need to save
       return
     }
 
@@ -102,12 +104,12 @@ function EditTemplate() {
       const productsWithValidData = data.products.filter(
         (product) => product.productId && product.quantity > 0,
       )
-
       if (productsWithValidData.length === 0) {
-        toast.error('Wszystkie produkty muszą mieć poprawną nazwę i ilość')
+        setStatus('saved') // Invalid data, but no need to save
         return
       }
 
+      setStatus('saving')
       await updateTemplate({
         id: templateId as Id<'templates'>,
         name: data.name,
@@ -118,14 +120,34 @@ function EditTemplate() {
           quantity: product.quantity,
         })),
       })
-
-      toast.success('Szablon został zaktualizowany pomyślnie!')
-      navigate({ to: '/templates' })
+      setStatus('saved')
     } catch (error) {
       console.error('Błąd podczas aktualizacji szablonu:', error)
+      setStatus('error')
       toast.error('Wystąpił błąd podczas aktualizacji szablonu')
     }
   }
+
+  // Debounced autosave on any form change
+  const debouncedSave = React.useMemo(
+    () =>
+      debounce((...args: unknown[]) => {
+        const data = args[0] as TemplateFormData
+        void saveNow(data)
+      }, 1000),
+    [saveNow],
+  )
+
+  useEffect(() => {
+    if (!isInitialized) return
+
+    const subscription = form.watch(() => {
+      setStatus('saving')
+      const current = form.getValues()
+      debouncedSave(current)
+    })
+    return () => subscription.unsubscribe()
+  }, [form, debouncedSave, isInitialized])
 
   const addProductToTemplate = () => {
     append({ productId: '', quantity: 1 })
@@ -174,28 +196,40 @@ function EditTemplate() {
 
   return (
     <DialogLayout
-      title="Edytuj szablon"
-      actions={
-        <div className="flex justify-between items-center py-4">
-          <Button
-            variant="outline"
-            onClick={() => navigate({ to: '/templates' })}
-          >
-            Anuluj
-          </Button>
-          <Button form="edit-template-form" type="submit" size="lg">
-            <Save className="h-4 w-4 mr-2" />
-            Zapisz zmiany
-          </Button>
+      title={
+        <div className="flex items-center gap-3">
+          <span>Edytuj szablon</span>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span
+              className={
+                status === 'saving'
+                  ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
+                  : status === 'error'
+                    ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
+                    : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
+              }
+              aria-label={
+                status === 'saving'
+                  ? 'Zapisywanie'
+                  : status === 'error'
+                    ? 'Błąd zapisu'
+                    : 'Zapisano'
+              }
+            />
+            <span>
+              {status === 'saving'
+                ? 'Zapisywanie...'
+                : status === 'error'
+                  ? 'Błąd zapisu'
+                  : 'Zapisano'}
+            </span>
+          </div>
         </div>
       }
+      actions={<div />}
     >
       <Form {...form}>
-        <form
-          id="edit-template-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form id="edit-template-form" className="space-y-6">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <FormField
