@@ -1,4 +1,3 @@
-import React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { useQuery, useMutation } from 'convex/react'
@@ -24,21 +23,22 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DialogLayout } from '@/components/layout/dialog-layout'
-import { Plus, X } from 'lucide-react'
-import { toast } from 'sonner'
-import { debounce } from '@/lib/debounce'
+import { Plus, X, CheckCircle, AlertCircle } from 'lucide-react'
+import { useFormAutosave } from '@/lib/use-form-autosave'
+import { z } from 'zod/v3'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-interface ListItem {
-  productId: Id<'products'> | ''
-  quantity: number
-  notes?: string
-  checked: boolean
-}
-
-interface EditListFormData {
-  name: string
-  items: ListItem[]
-}
+const schema = z.object({
+  name: z.string().min(1, 'Nazwa jest wymagana'),
+  items: z.array(
+    z.object({
+      productId: z.string().min(1, 'Produkt jest wymagany'),
+      quantity: z.number().min(1, 'Ilość jest wymagana'),
+      notes: z.string().optional(),
+      checked: z.boolean(),
+    }),
+  ),
+})
 
 export const Route = createFileRoute('/lists/$listId/edit')({
   component: EditList,
@@ -52,16 +52,14 @@ function EditList() {
   })
   const updateShoppingList = useMutation(api.lists.updateList)
 
-  const [status, setStatus] = React.useState<'saved' | 'saving' | 'error'>(
-    'saved',
-  )
-  const [isInitialized, setIsInitialized] = React.useState(false)
-
-  const form = useForm<EditListFormData>({
+  const form = useForm({
+    mode: 'onChange',
+    resolver: zodResolver(schema),
     defaultValues: {
       name: '',
       items: [],
     },
+    values: shoppingList ? shoppingList : undefined,
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -69,17 +67,18 @@ function EditList() {
     name: 'items',
   })
 
-  // Reset form when shopping list data is loaded
-  React.useEffect(() => {
-    if (shoppingList) {
-      form.reset({
-        name: shoppingList.name,
-        items: shoppingList.items,
-      })
-      setStatus('saved')
-      setIsInitialized(true)
-    }
-  }, [shoppingList, form])
+  const saveStatus = useFormAutosave(form, (data) =>
+    updateShoppingList({
+      id: listId as Id<'lists'>,
+      name: data.name,
+      items: data.items.filter((item) => item.productId !== '') as Array<{
+        productId: Id<'products'>
+        quantity: number
+        notes?: string
+        checked: boolean
+      }>,
+    }),
+  )
 
   const addProductToList = () => {
     append({
@@ -90,68 +89,25 @@ function EditList() {
     })
   }
 
-  const saveNow = React.useCallback(
-    async (data: EditListFormData) => {
-      // Manual validation
-      if (!data.name.trim()) {
-        setStatus('saved') // Invalid data, but no need to save
-        return
-      }
-
-      if (data.items.length === 0) {
-        setStatus('saved') // Invalid data, but no need to save
-        return
-      }
-
-      try {
-        const validItems = data.items.filter((item) => item.productId !== '')
-
-        if (validItems.length === 0) {
-          setStatus('saved') // Invalid data, but no need to save
-          return
-        }
-
-        setStatus('saving')
-        await updateShoppingList({
-          id: listId as Id<'lists'>,
-          name: data.name,
-          items: validItems as Array<{
-            productId: Id<'products'>
-            quantity: number
-            notes?: string
-            checked: boolean
-          }>,
-        })
-        setStatus('saved')
-      } catch (error) {
-        console.error('Błąd podczas zapisywania listy:', error)
-        setStatus('error')
-        toast.error('Wystąpił błąd podczas aktualizacji listy')
-      }
-    },
-    [listId, updateShoppingList],
-  )
-
-  // Debounced autosave on any form change
-  const debouncedSave = React.useMemo(
-    () =>
-      debounce((...args: unknown[]) => {
-        const data = args[0] as EditListFormData
-        void saveNow(data)
-      }, 1000),
-    [saveNow],
-  )
-
-  React.useEffect(() => {
-    if (!isInitialized) return
-
-    const subscription = form.watch(() => {
-      setStatus('saving')
-      const currentValues = form.getValues()
-      debouncedSave(currentValues)
-    })
-    return () => subscription.unsubscribe()
-  }, [form, debouncedSave, isInitialized])
+  // Status indicator component
+  const StatusIndicator = () => {
+    switch (saveStatus) {
+      case 'saved':
+        return (
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <CheckCircle className="h-4 w-4" /> Zapisano
+          </div>
+        )
+      case 'failed':
+        return (
+          <div className="flex items-center gap-2 text-sm text-red-600">
+            <AlertCircle className="h-4 w-4" /> Błąd zapisu
+          </div>
+        )
+      default:
+        return null
+    }
+  }
 
   // Show loading state while data is being fetched
   if (!shoppingList) {
@@ -166,36 +122,7 @@ function EditList() {
   }
 
   return (
-    <DialogLayout
-      title={<span>Edytuj</span>}
-      headerActions={
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span
-            className={
-              status === 'saving'
-                ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
-                : status === 'error'
-                  ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
-                  : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
-            }
-            aria-label={
-              status === 'saving'
-                ? 'Zapisywanie'
-                : status === 'error'
-                  ? 'Błąd zapisu'
-                  : 'Zapisano'
-            }
-          />
-          <span>
-            {status === 'saving'
-              ? 'Zapisywanie...'
-              : status === 'error'
-                ? 'Błąd zapisu'
-                : 'Zapisano'}
-          </span>
-        </div>
-      }
-    >
+    <DialogLayout title="Edytuj listę" headerActions={<StatusIndicator />}>
       <Form {...form}>
         <form id="edit-list-form" className="space-y-6">
           <div className="space-y-4">
