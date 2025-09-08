@@ -5,7 +5,7 @@ import { getAuthUserId } from '@convex-dev/auth/server'
 export const createTemplate = mutation({
   args: {
     name: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
     type: v.union(v.literal('meal'), v.literal('set')),
     products: v.array(
       v.object({
@@ -33,7 +33,7 @@ export const updateTemplate = mutation({
   args: {
     id: v.id('templates'),
     name: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
     type: v.union(v.literal('meal'), v.literal('set')),
     products: v.array(
       v.object({

@@ -13,7 +13,7 @@ export default defineSchema({
   templates: defineTable({
     userId: v.id('users'),
     name: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
     type: v.union(v.literal('meal'), v.literal('set')),
     products: v.array(
       v.object({

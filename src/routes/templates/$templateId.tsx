@@ -30,10 +30,11 @@ import { toast } from 'sonner'
 import debounce from 'lodash/debounce'
 import { z } from 'zod/v3'
 import { zodResolver } from '@hookform/resolvers/zod'
+import useDeepCompareEffect from '@/lib/use-deep-compare-effect'
 
 const formSchema = z.object({
   name: z.string().min(1, 'Nazwa jest wymagana'),
-  description: z.string().min(1, 'Opis jest wymagany'),
+  description: z.string().optional(),
   type: z.enum(['meal', 'set']),
   products: z
     .array(
@@ -44,8 +45,6 @@ const formSchema = z.object({
     )
     .min(1, 'Dodaj przynajmniej jeden produkt'),
 })
-
-type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute('/templates/$templateId')({
   component: EditTemplate,
@@ -65,6 +64,7 @@ function EditTemplate() {
   )
 
   const form = useForm({
+    mode: 'onChange',
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -83,18 +83,13 @@ function EditTemplate() {
   const save = useCallback(
     debounce(() => {
       form.handleSubmit(async (data) => {
-        console.log('submit fired', data)
         try {
-          const productsWithValidData = data.products.filter(
-            (product) => product.productId && product.quantity > 0,
-          )
-
           await updateTemplate({
             id: templateId as Id<'templates'>,
             name: data.name,
             description: data.description,
             type: data.type,
-            products: productsWithValidData.map((product) => ({
+            products: data.products.map((product) => ({
               productId: product.productId as Id<'products'>,
               quantity: product.quantity,
             })),
@@ -110,17 +105,14 @@ function EditTemplate() {
     [form.handleSubmit],
   )
 
-  useEffect(() => {
-    const subscription = form.watch(() => {
-      if (form.formState.isDirty && syncStatus !== 'saving') {
-        console.log('form is dirty, saving')
-        setSyncStatus('saving')
-        save()
-      }
-    })
+  const data = form.watch()
 
-    return () => subscription.unsubscribe()
-  }, [form.watch, syncStatus])
+  useDeepCompareEffect(() => {
+    if (form.formState.isDirty && syncStatus !== 'saving') {
+      setSyncStatus('saving')
+      save()
+    }
+  }, [data, save])
 
   const addProductToTemplate = () => {
     append({ productId: '', quantity: 1 })
