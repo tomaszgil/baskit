@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { useQuery, useMutation } from 'convex/react'
-import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from '~/convex/_generated/api'
 import type { Id } from '~/convex/_generated/dataModel'
@@ -25,12 +24,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DialogLayout } from '@/components/layout/dialog-layout'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, CheckCircle, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import debounce from 'lodash/debounce'
 import { z } from 'zod/v3'
 import { zodResolver } from '@hookform/resolvers/zod'
-import useDeepCompareEffect from '@/lib/use-deep-compare-effect'
+import { useFormAutosave } from '@/lib/use-form-autosave'
 
 const formSchema = z.object({
   name: z.string().min(1, 'Nazwa jest wymagana'),
@@ -59,9 +58,6 @@ function EditTemplate() {
   })
   const products = useQuery(api.products.getProducts) || []
   const updateTemplate = useMutation(api.templates.updateTemplate)
-  const [syncStatus, setSyncStatus] = useState<'saved' | 'saving' | 'error'>(
-    'saved',
-  )
 
   const form = useForm({
     mode: 'onChange',
@@ -80,39 +76,18 @@ function EditTemplate() {
     name: 'products',
   })
 
-  const save = useCallback(
-    debounce(() => {
-      form.handleSubmit(async (data) => {
-        try {
-          await updateTemplate({
-            id: templateId as Id<'templates'>,
-            name: data.name,
-            description: data.description,
-            type: data.type,
-            products: data.products.map((product) => ({
-              productId: product.productId as Id<'products'>,
-              quantity: product.quantity,
-            })),
-          })
-          setSyncStatus('saved')
-        } catch (error) {
-          console.error('Błąd podczas aktualizacji szablonu:', error)
-          setSyncStatus('error')
-          toast.error('Wystąpił błąd podczas aktualizacji szablonu')
-        }
-      })()
-    }, 2000),
-    [form.handleSubmit],
+  const saveStatus = useFormAutosave(form, (data) =>
+    updateTemplate({
+      id: templateId as Id<'templates'>,
+      name: data.name,
+      description: data.description,
+      type: data.type,
+      products: data.products.map((product) => ({
+        productId: product.productId as Id<'products'>,
+        quantity: product.quantity,
+      })),
+    }),
   )
-
-  const data = form.watch()
-
-  useDeepCompareEffect(() => {
-    if (form.formState.isDirty && syncStatus !== 'saving') {
-      setSyncStatus('saving')
-      save()
-    }
-  }, [data, save])
 
   const addProductToTemplate = () => {
     append({ productId: '', quantity: 1 })
@@ -128,6 +103,26 @@ function EditTemplate() {
         return 'szt.'
       default:
         return unit
+    }
+  }
+
+  // Status indicator component
+  const StatusIndicator = () => {
+    switch (saveStatus) {
+      case 'saved':
+        return (
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <CheckCircle className="h-4 w-4" /> Zapisano
+          </div>
+        )
+      case 'failed':
+        return (
+          <div className="flex items-center gap-2 text-sm text-red-600">
+            <AlertCircle className="h-4 w-4" /> Błąd zapisu
+          </div>
+        )
+      default:
+        return null
     }
   }
 
@@ -160,36 +155,7 @@ function EditTemplate() {
   }
 
   return (
-    <DialogLayout
-      title="Edytuj szablon"
-      headerActions={
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span
-            className={
-              syncStatus === 'saving'
-                ? 'inline-block h-2.5 w-2.5 rounded-full bg-yellow-500'
-                : syncStatus === 'error'
-                  ? 'inline-block h-2.5 w-2.5 rounded-full bg-red-500'
-                  : 'inline-block h-2.5 w-2.5 rounded-full bg-green-500'
-            }
-            aria-label={
-              syncStatus === 'saving'
-                ? 'Zapisywanie'
-                : syncStatus === 'error'
-                  ? 'Błąd zapisu'
-                  : 'Zapisano'
-            }
-          />
-          <span>
-            {syncStatus === 'saving'
-              ? 'Zapisywanie...'
-              : syncStatus === 'error'
-                ? 'Błąd zapisu'
-                : 'Zapisano'}
-          </span>
-        </div>
-      }
-    >
+    <DialogLayout title="Edytuj szablon" headerActions={<StatusIndicator />}>
       <Form {...form}>
         <form id="edit-template-form" className="space-y-6">
           <div className="space-y-4">
