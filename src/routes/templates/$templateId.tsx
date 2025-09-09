@@ -24,9 +24,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DialogLayout } from '@/components/layout/dialog-layout'
-import { Plus, X, CheckCircle, AlertCircle } from 'lucide-react'
-import { toast } from 'sonner'
-import debounce from 'lodash/debounce'
+import { FormStatusIndicator } from '@/components/form-status-indicator'
+import { Plus, X } from 'lucide-react'
 import { z } from 'zod/v3'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFormAutosave } from '@/lib/use-form-autosave'
@@ -106,26 +105,6 @@ function EditTemplate() {
     }
   }
 
-  // Status indicator component
-  const StatusIndicator = () => {
-    switch (saveStatus) {
-      case 'saved':
-        return (
-          <div className="flex items-center gap-2 text-sm text-green-600">
-            <CheckCircle className="h-4 w-4" /> Zapisano
-          </div>
-        )
-      case 'failed':
-        return (
-          <div className="flex items-center gap-2 text-sm text-red-600">
-            <AlertCircle className="h-4 w-4" /> Błąd zapisu
-          </div>
-        )
-      default:
-        return null
-    }
-  }
-
   // Show loading state while template is being fetched
   if (!template) {
     return (
@@ -155,7 +134,10 @@ function EditTemplate() {
   }
 
   return (
-    <DialogLayout title="Edytuj szablon" headerActions={<StatusIndicator />}>
+    <DialogLayout
+      title="Edytuj szablon"
+      headerActions={<FormStatusIndicator status={saveStatus} />}
+    >
       <Form {...form}>
         <form id="edit-template-form" className="space-y-6">
           <div className="space-y-4">

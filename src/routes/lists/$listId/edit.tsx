@@ -23,7 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DialogLayout } from '@/components/layout/dialog-layout'
-import { Plus, X, CheckCircle, AlertCircle } from 'lucide-react'
+import { FormStatusIndicator } from '@/components/form-status-indicator'
+import { Plus, X } from 'lucide-react'
 import { useFormAutosave } from '@/lib/use-form-autosave'
 import { z } from 'zod/v3'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -89,26 +90,6 @@ function EditList() {
     })
   }
 
-  // Status indicator component
-  const StatusIndicator = () => {
-    switch (saveStatus) {
-      case 'saved':
-        return (
-          <div className="flex items-center gap-2 text-sm text-green-600">
-            <CheckCircle className="h-4 w-4" /> Zapisano
-          </div>
-        )
-      case 'failed':
-        return (
-          <div className="flex items-center gap-2 text-sm text-red-600">
-            <AlertCircle className="h-4 w-4" /> Błąd zapisu
-          </div>
-        )
-      default:
-        return null
-    }
-  }
-
   // Show loading state while data is being fetched
   if (!shoppingList) {
     return (
@@ -122,7 +103,10 @@ function EditList() {
   }
 
   return (
-    <DialogLayout title="Edytuj listę" headerActions={<StatusIndicator />}>
+    <DialogLayout
+      title="Edytuj listę"
+      headerActions={<FormStatusIndicator status={saveStatus} />}
+    >
       <Form {...form}>
         <form id="edit-list-form" className="space-y-6">
           <div className="space-y-4">
